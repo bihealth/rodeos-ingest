@@ -19,8 +19,13 @@ YEAR=${YEAR:-2020}
 DEVICE=${DEVICE:-M06205}
 FOLDER=${FOLDER:-200602_M06205_0009_000000000-CW9PR}
 DEST="/$ZONE/$SITE/raw-data/$YEAR/$DEVICE/$FOLDER"
-
 SRC=${SRC-utils/example/200602_M06205_0009_000000000-CW9PR}
+BACKGROUND=${BACKGROUND:-0}
+
+ARGS_BACKGROUND=""
+if [[ "$BACKGROUND" -ne 1 ]]; then
+    ARGS_BACKGROUND="--synchronous --progress"
+fi
 
 imkdir -p "$DEST"
 
@@ -29,5 +34,5 @@ python \
     start \
         "$SRC" \
         "$DEST" \
-        --synchronous \
-        --progress
+        --event_handler omics_ingest.genomics.illumina \
+        $ARGS_BACKGROUND
