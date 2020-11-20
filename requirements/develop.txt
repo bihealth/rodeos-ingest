@@ -3,4 +3,4 @@
 black
 
 sphinx
-sphinx-material
+sphinx_rtd_theme

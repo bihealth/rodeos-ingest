@@ -10,5 +10,14 @@ The system itself is based on the `iRODS <https://irods.org>`_ ecosystem:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Data Flow
 
+   flow_overview
+   flow_landing_zones
+   flow_ingest
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Details
+
+   fs_structure
