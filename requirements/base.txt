@@ -1,4 +1,4 @@
 attr
-dateutil
+python-dateutil
 
 irods_capability_automated_ingest
