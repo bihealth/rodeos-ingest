@@ -1,3 +1,4 @@
 attr
+dateutil
 
 irods_capability_automated_ingest

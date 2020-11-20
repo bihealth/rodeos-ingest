@@ -48,6 +48,10 @@ RUN_PARAMETERS_AVU_KEY_PREFIX = "omics::ingest::run_parameters"
 
 #: Mapping of XPaths info ``runParameter.xml`` to iRODS AVU names.
 RUN_PARAMETERS_XPATH_MAP = {
+    ".//Application": "application",
+    ".//ApplicationName": "application_name",
+    ".//ApplicationVersion": "application_version",
+    ".//RunParametersVersion": "run_parameters_version",
     ".//FlowcellRFIDTag/SerialNumber": "flowcell_rfid_tag::serial_number",
     ".//FlowcellRFIDTag/PartNumber": "flowcell_rfid_tag::part_number",
     ".//FlowcellRFIDTag/ExpirationDate": "flowcell_rfid_tag::expiration_date",
@@ -81,3 +85,50 @@ def parse_runparameters_xml(path):
         if elem is not None:
             result["%s::%s" % (RUN_PARAMETERS_AVU_KEY_PREFIX, key)] = elem.text
     return result
+
+
+#: Prefix for AVU for netcopy.
+NETCOPY_AVU_KEY_PREFIX = "omics::ingest::netcopy_complete"
+
+
+@attr.s(auto_attribs=True, frozen=True)
+class NetcopyInfo:
+    """Information from the netcopy file."""
+
+    date: str
+    time: str
+    rta_version: str
+
+    def to_avus(self):
+        """Yield AVU triples for iRODS"""
+        for key, value in attr.asdict(self).items():
+            yield "{}::{}".format(NETCOPY_AVU_KEY_PREFIX, key), str(value), ""
+
+
+def parse_netcopy_complete_txt(path: str) -> typing.Optional[NetcopyInfo]:
+    """Parse the Netcopy complete files."""
+    try:
+        with open(path, "rt") as inputf:
+            line = inputf.readline().strip()
+            if line.count(",") != 2:
+                return None
+            else:
+                return NetcopyInfo(*line.split(","))
+    except IOError as _e:
+        return None
+
+
+def runparameters_to_marker_file(run_parameters: typing.Dict[str, str]) -> typing.Tuple[str]:
+    """Takes a run parameters dictionary and returns the name of the marker file."""
+    if "novaseq" in run_parameters.get("application", "").lower():
+        return ("CopyComplete.txt",)
+    elif "nextseq" in run_parameters.get("application_name", "").lower():
+        return ("RTAComplete.txt",)
+    elif "hiseq" in run_parameters.get("application_name", "").lower():
+        return ("RTAComplete.txt",)
+    elif "miseq" in run_parameters.get("run_parameters_version", "").lower():
+        return ("Basecalling_Netcopy_complete.txt", "ImageAnalysis_Netcopy_complete.txt")
+    elif "miniseq" in run_parameters.get("application_name", "").lower():
+        return ("RTAComplete.txt",)
+    else:
+        raise Exception("Cannot determine instrument type from run parameters XML file.")
