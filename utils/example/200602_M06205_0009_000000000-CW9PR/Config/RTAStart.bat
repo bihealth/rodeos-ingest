@@ -1,0 +1,3 @@
+title RTA 1.18.54 - D:\Illumina\MiSeqTemp\200602_M06205_0009_000000000-CW9PR
+pushd "C:\Illumina\RTA"
+"C:\Illumina\RTA\RTA.exe"  "D:\Illumina\MiSeqTemp\200602_M06205_0009_000000000-CW9PR\Images " "Z:\ " Read=All ControlLane=0 Threads=2 CopyIntensityFilesToNetwork=0 instrumentType=miseq templatecycles=7 subregionachannelsettings=213,0,0 subregioncchannelsettings=213,0,0 subregionwidthheight=2944,2440 qualityscoretype=v8
