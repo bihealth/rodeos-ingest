@@ -6,6 +6,22 @@ Data Flow: Overview
 
 This section describes some terminology and gives an overview of the work and data flow for raw data in CODA.
 
+-----------------------------
+Life Cycle of an Illumina Run
+-----------------------------
+
+1. CODA provides a Ceph-based data sink network share for each sequencer to mount as readable and writeable.
+   Data is written there using the flow cell naming convention of ``<YYMMDD>_<INSTRUMENT_<RUN_NO>_<FLOWCELLID>``.
+2. CODA watches this Ceph folder and continuously ingests the data into the iRODS system into the per-site raw data area.
+3. The completion of the sequencing is detected and the data on Ceph is moved from the data sink into the ingested area on the Ceph system.
+   This area is not visible to the instrument and read-only by the operators via network shares.
+
+...
+
+--------
+Glossary
+--------
+
 **Site.**
 Each data generating lab corresponds to a site.
 Each site has a number of instruments that generate data.
