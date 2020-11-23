@@ -1,4 +1,4 @@
-"""Code with ingest capability logic for Illumina sequencer output.
+"""Code with ingest capability logic for Illumina sequencer output (BCL files).
 
 - Use ``Operation.PUT_SYNC`` to update changed files in addition to uploading new ones.
 - Handle initial upload and update of ``RunInfo.xml`` and ``runParameters.xml`` and update
@@ -19,7 +19,7 @@ from irods_capability_automated_ingest.core import Core
 from irods_capability_automated_ingest.utils import Operation
 from irods_capability_automated_ingest.sync_irods import irods_session
 
-from ._illumina import (
+from .run_folder import (
     parse_runinfo_xml,
     parse_runparameters_xml,
     parse_netcopy_complete_txt,
@@ -27,7 +27,7 @@ from ._illumina import (
     RunInfo,
     NetcopyInfo,
 )
-from ._helpers import cleanuping
+from ..helpers import cleanuping
 
 
 #: This time should pass after the previous update and the existance of the output marker file

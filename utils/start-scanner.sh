@@ -32,5 +32,5 @@ python \
     start \
         "$SRC" \
         "$DEST" \
-        --event_handler omics_ingest.genomics.illumina \
+        --event_handler omics_ingest.genomics.illumina.bcl \
         $ARGS_BACKGROUND
