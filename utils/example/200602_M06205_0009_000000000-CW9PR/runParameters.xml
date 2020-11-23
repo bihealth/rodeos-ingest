@@ -42,7 +42,7 @@
   <ReagentKitBarcode>MS9274649-600V3</ReagentKitBarcode>
   <PreviousPR2BottleBarcode />
   <PreviousReagentKitBarcode />
-  <ExperimentName>2020-06-02_A000067_Project</ExperimentName>
+  <ExperimentName>The Experiment Name</ExperimentName>
   <Chemistry>Amplicon</Chemistry>
   <Username>sbsuser</Username>
   <Workflow>
@@ -61,7 +61,7 @@
   <MostRecentWashType>Maintenance</MostRecentWashType>
   <RecipeFolder>D:\Illumina\MiSeq Control Software\CustomRecipe</RecipeFolder>
   <ILMNOnlyRecipeFolder>C:\Illumina\MiSeq Control Software\Recipe</ILMNOnlyRecipeFolder>
-  <SampleSheetName>2020-06-02_A000067_Project</SampleSheetName>
+  <SampleSheetName>The Experiment Name</SampleSheetName>
   <SampleSheetFolder>C:\Users\sbsuser\Desktop</SampleSheetFolder>
   <ManifestFolder>D:\Illumina\MiSeq Control Software\Manifests</ManifestFolder>
   <OutputFolder>Z:\200602_M06205_0009_000000000-CW9PR</OutputFolder>
