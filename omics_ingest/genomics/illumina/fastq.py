@@ -1,0 +1,59 @@
+"""Code with ingest capability logic for Illumina sequencer output (BCL files).
+
+- Use ``Operation.PUT_APPEND`` to update changed files in addition to uploading new ones.
+- When an output folder is first seen write current timestamp to ``omics::ingest::first_seen``
+- Every time a is changed then write current timestamp to ``omics::ingest::last_update``
+- If the marker file for being done has been written out and ``omics::ingest::last_update``
+  is longer than ``DELAY_UNTIL_AT_REST`` (e.g., 15 minutes) in the past then move away the
+  run folder into the ingested part of the landing zone.
+"""
+
+import datetime
+import pathlib
+import typing
+
+import dateutil.parser
+from irods_capability_automated_ingest.core import Core
+from irods_capability_automated_ingest.utils import Operation
+from irods_capability_automated_ingest.sync_irods import irods_session
+
+from ...common import (
+    pre_job as common_pre_job,
+    post_job as common_post_job,
+    refresh_last_update_metadata,
+)
+
+#: This time should pass after the previous update and the existance of the output marker file
+#: for a run folder to be considered at rest and moved away.
+# DELAY_UNTIL_AT_REST = datetime.timedelta(minutes=5)
+DELAY_UNTIL_AT_REST = datetime.timedelta(seconds=15)
+
+
+def is_demuxfolder_done(path: typing.Union[str, pathlib.Path]) -> bool:
+    path = pathlib.Path(path)
+    return (path / "DIGESTIFLOW_DEMUX_DONE.txt").exists()
+
+
+class event_handler(Core):
+    @staticmethod
+    def pre_job(hdlr_mod, logger, meta):
+        """Set the ``first_seen`` meta data value."""
+        common_pre_job(hdlr_mod, logger, meta)
+
+    @staticmethod
+    def post_job(hdlr_mod, logger, meta):
+        """Move completed and at rest run folders into the "ingested" area."""
+        common_post_job(hdlr_mod, logger, meta, is_demuxfolder_done, DELAY_UNTIL_AT_REST)
+
+    @staticmethod
+    def operation(session, meta, **options):
+        """Return ``Operation.PUT_APPEND`` to only upload new data."""
+        return Operation.PUT_APPEND
+
+    @staticmethod
+    def post_data_obj_create(hdlr_mod, logger, session, meta, **options):
+        refresh_last_update_metadata(logger, session, meta)
+
+    @staticmethod
+    def post_data_obj_update(hdlr_mod, logger, session, meta, **options):
+        refresh_last_update_metadata(logger, session, meta)

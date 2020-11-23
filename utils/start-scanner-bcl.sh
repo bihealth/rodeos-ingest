@@ -17,7 +17,7 @@ ZONE=${ZONE:-omicsTestingZone}
 SITE=test-site
 DEVICE=${DEVICE:-M06205}
 DEST="/$ZONE/$SITE/raw-data/$DEVICE"
-SRC=${SRC-utils/example}
+SRC=${SRC-utils/example-bcl}
 BACKGROUND=${BACKGROUND:-0}
 
 ARGS_BACKGROUND=""
