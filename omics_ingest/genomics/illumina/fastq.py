@@ -25,8 +25,8 @@ from ...common import (
 
 #: This time should pass after the previous update and the existance of the output marker file
 #: for a run folder to be considered at rest and moved away.
-# DELAY_UNTIL_AT_REST = datetime.timedelta(minutes=5)
-DELAY_UNTIL_AT_REST = datetime.timedelta(seconds=15)
+DELAY_UNTIL_AT_REST = datetime.timedelta(minutes=5)
+# DELAY_UNTIL_AT_REST = datetime.timedelta(seconds=15)
 
 
 def is_demuxfolder_done(path: typing.Union[str, pathlib.Path]) -> bool:
@@ -39,11 +39,11 @@ class event_handler(Core):
     def pre_job(hdlr_mod, logger, meta):
         """Set the ``first_seen`` meta data value."""
         common_pre_job(hdlr_mod, logger, meta)
+        common_post_job(hdlr_mod, logger, meta, is_demuxfolder_done, DELAY_UNTIL_AT_REST)
 
     @staticmethod
     def post_job(hdlr_mod, logger, meta):
         """Move completed and at rest run folders into the "ingested" area."""
-        common_post_job(hdlr_mod, logger, meta, is_demuxfolder_done, DELAY_UNTIL_AT_REST)
 
     @staticmethod
     def operation(session, meta, **options):
