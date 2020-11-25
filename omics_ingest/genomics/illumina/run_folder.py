@@ -55,6 +55,7 @@ RUN_PARAMETERS_AVU_KEY_PREFIX = "omics::ingest::run_parameters"
 RUN_PARAMETERS_XPATH_MAP = {
     ".//Application": "application",
     ".//ApplicationName": "application_name",
+    ".//Setup/ApplicationName": "application_name",
     ".//ApplicationVersion": "application_version",
     ".//RunParametersVersion": "run_parameters_version",
     ".//FlowcellRFIDTag/SerialNumber": "flowcell_rfid_tag::serial_number",
