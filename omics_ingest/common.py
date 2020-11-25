@@ -97,7 +97,13 @@ def pre_job(hdlr_mod, logger, meta):
                 logger.info("Skipping %s as it corresponds to no destination collection")
 
 
-def post_job(hdlr_mod, logger, meta, is_folder_done: typing.Callable[[typing.Union[pathlib.Path, str]], bool], delay_until_at_rest):
+def post_job(
+    hdlr_mod,
+    logger,
+    meta,
+    is_folder_done: typing.Callable[[typing.Union[pathlib.Path, str]], bool],
+    delay_until_at_rest,
+):
     """Move completed run folders into the "ingested" area."""
     src_root = pathlib.Path(meta["root"])
     with cleanuping(irods_session(hdlr_mod=hdlr_mod, meta=meta, logger=logger)) as session:

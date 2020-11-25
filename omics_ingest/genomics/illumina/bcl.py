@@ -87,7 +87,9 @@ def is_runfolder_done(path: typing.Union[str, pathlib.Path]) -> bool:
     path = pathlib.Path(path)
     for name in ("RunParameters.xml", "runParameters.xml"):
         if (path / name).exists():
-            markers = runparameters_to_marker_file(parse_runparameters_xml(path / name))
+            markers = runparameters_to_marker_file(
+                parse_runparameters_xml(path / name), path / name
+            )
             return all((path / marker).exists() for marker in markers)
 
 

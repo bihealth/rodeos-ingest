@@ -1,5 +1,6 @@
 """Helper code for reading Illumina files."""
 
+import pathlib
 import typing
 import xml.etree.ElementTree as ET
 
@@ -7,6 +8,10 @@ import attr
 
 #: The AVU key prefix to use for run info values.
 RUN_INFO_AVU_KEY_PREFIX = "omics::ingest::run_info"
+
+
+class UnknownInstrumentType(Exception):
+    """Raised when the instrument type could not be determined."""
 
 
 @attr.s(auto_attribs=True, frozen=True)
@@ -118,7 +123,10 @@ def parse_netcopy_complete_txt(path: str) -> typing.Optional[NetcopyInfo]:
         return None
 
 
-def runparameters_to_marker_file(run_parameters: typing.Dict[str, str]) -> typing.Tuple[str]:
+def runparameters_to_marker_file(
+    run_parameters: typing.Dict[str, str],
+    path: typing.Union[str, pathlib.Path],
+) -> typing.Tuple[str]:
     """Takes a run parameters dictionary and returns the name of the marker file."""
     if "novaseq" in run_parameters.get("application", "").lower():
         return ("CopyComplete.txt",)
@@ -131,4 +139,6 @@ def runparameters_to_marker_file(run_parameters: typing.Dict[str, str]) -> typin
     elif "miniseq" in run_parameters.get("application_name", "").lower():
         return ("RTAComplete.txt",)
     else:
-        raise Exception("Cannot determine instrument type from run parameters XML file.")
+        raise UnknownInstrumentType(
+            "Cannot determine instrument type from run parameters XML file: %s" % path
+        )
