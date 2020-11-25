@@ -129,15 +129,16 @@ def runparameters_to_marker_file(
     path: typing.Union[str, pathlib.Path],
 ) -> typing.Tuple[str]:
     """Takes a run parameters dictionary and returns the name of the marker file."""
-    if "novaseq" in run_parameters.get("application", "").lower():
+    p = RUN_PARAMETERS_AVU_KEY_PREFIX
+    if "novaseq" in run_parameters.get("%s::application" % p, "").lower():
         return ("CopyComplete.txt",)
-    elif "nextseq" in run_parameters.get("application_name", "").lower():
+    elif "nextseq" in run_parameters.get("%s::application_name" % p, "").lower():
         return ("RTAComplete.txt",)
-    elif "hiseq" in run_parameters.get("application_name", "").lower():
+    elif "hiseq" in run_parameters.get("%s::application_name" % p, "").lower():
         return ("RTAComplete.txt",)
-    elif "miseq" in run_parameters.get("run_parameters_version", "").lower():
+    elif "miseq" in run_parameters.get("%s::run_parameters_version" % p, "").lower():
         return ("Basecalling_Netcopy_complete.txt", "ImageAnalysis_Netcopy_complete.txt")
-    elif "miniseq" in run_parameters.get("application_name", "").lower():
+    elif "miniseq" in run_parameters.get("%s::application_name" % p, "").lower():
         return ("RTAComplete.txt",)
     else:
         raise UnknownInstrumentType(
