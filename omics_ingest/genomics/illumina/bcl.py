@@ -122,3 +122,11 @@ class event_handler(Core):
         initial upload and update."""
         _post_runinfoxml_create_or_update(logger, session, meta)
         refresh_last_update_metadata(logger, session, meta)
+
+    @staticmethod
+    def delay(hdlr_mod, logger, meta):
+        return 5
+
+    @staticmethod
+    def max_retries(hdlr_mod, logger, meta):
+        return 10

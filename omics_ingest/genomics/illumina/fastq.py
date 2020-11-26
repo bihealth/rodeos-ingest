@@ -57,3 +57,11 @@ class event_handler(Core):
     @staticmethod
     def post_data_obj_update(hdlr_mod, logger, session, meta, **options):
         refresh_last_update_metadata(logger, session, meta)
+
+    @staticmethod
+    def delay(hdlr_mod, logger, meta):
+        return 5
+
+    @staticmethod
+    def max_retries(hdlr_mod, logger, meta):
+        return 10
