@@ -7,6 +7,7 @@ import typing
 
 import dateutil.parser
 from irods_capability_automated_ingest.sync_irods import irods_session
+from irods.exception import CAT_SUCCESS_BUT_WITH_NO_INFO
 
 #: AVU key to use for ``last_update`` attribute.
 KEY_LAST_UPDATE = "omics::ingest::last_update"
@@ -72,7 +73,10 @@ def _post_job_run_folder_done(
         # Remove all old ``status`` meta data.
         logger.info("Marking destination collection as complete")
         for meta in dst_collection.metadata.get_all(KEY_STATUS):
-            dst_collection.metadata.remove(meta)
+            try:
+                dst_collection.metadata.remove(meta)
+            except CAT_SUCCESS_BUT_WITH_NO_INFO:
+                pass  # swallow
         # set ``status`` meta data to not running any more.
         dst_collection.metadata.add(KEY_STATUS, "complete", "")
     else:
@@ -136,7 +140,10 @@ def refresh_last_update_metadata(logger, session, meta):
         coll = session.collections.get(root_target)
         # Remove all old ``last_update`` meta data.
         for meta in coll.metadata.get_all(KEY_LAST_UPDATE):
-            coll.metadata.remove(meta)
+            try:
+                coll.metadata.remove(meta)
+            except CAT_SUCCESS_BUT_WITH_NO_INFO:
+                pass  # swallow
         # Add new ``last_update`` meta data.
         coll.metadata.add(KEY_LAST_UPDATE, datetime.datetime.now().isoformat(), "")
         # Add new ``status`` meta data if running.
