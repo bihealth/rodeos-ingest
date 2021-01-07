@@ -1,6 +1,9 @@
 attrs
 python-dateutil
 
+irods_capability_automated_ingest
+python-irodsclient
+
 # Install in-flight versions of ingest and python-irodsclient.
--e git+https://github.com/irods/irods_capability_automated_ingest.git@c01cc4d8003590490b40d99b57c475c7b0b414ab#egg=irods_capability_automated_ingest
--e git+https://github.com/irods/python-irodsclient.git@5a6216d0839ff68e80b2525571165e5acd3bd8d4#egg=python-irodsclient
+#-e git+https://github.com/irods/irods_capability_automated_ingest.git@c01cc4d8003590490b40d99b57c475c7b0b414ab#egg=irods_capability_automated_ingest
+#-e git+https://github.com/irods/python-irodsclient.git@5a6216d0839ff68e80b2525571165e5acd3bd8d4#egg=python-irodsclient
