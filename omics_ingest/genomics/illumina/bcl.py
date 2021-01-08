@@ -14,6 +14,7 @@ import datetime
 import pathlib
 import typing
 
+from irods.meta import iRODSMeta
 from irods_capability_automated_ingest.core import Core
 from irods_capability_automated_ingest.utils import Operation
 from irods_capability_automated_ingest.sync_irods import irods_session
@@ -46,7 +47,7 @@ def apply_runinfo_metadata(session, run_info: RunInfo, target: str) -> None:
     with cleanuping(session):
         coll = session.collections.get(target_coll)
         for avu in run_info.to_avus():
-            coll.metadata.add(*avu)
+            coll.metadata[avu[0]] = iRODSMeta(*avu)
 
 
 def apply_runparameters_metadata(session, values: typing.Dict[str, str], target: str) -> None:
@@ -55,7 +56,7 @@ def apply_runparameters_metadata(session, values: typing.Dict[str, str], target:
     with cleanuping(session):
         coll = session.collections.get(target_coll)
         for key, value in values.items():
-            coll.metadata.add(key, value, "")
+            coll.metadata[key] = iRODSMeta(key, value, "")
 
 
 def apply_netcopy_complete_metadata(session, netcopy_info: NetcopyInfo, target: str) -> None:
@@ -63,7 +64,7 @@ def apply_netcopy_complete_metadata(session, netcopy_info: NetcopyInfo, target: 
     with cleanuping(session):
         coll = session.data_objects.get(target)
         for avu in netcopy_info.to_avus():
-            coll.metadata.add(*avu)
+            coll.metadata[avu[0]] = iRODSMeta(*avu)
 
 
 def _post_runinfoxml_create_or_update(logger, session, meta):

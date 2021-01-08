@@ -8,6 +8,7 @@ import typing
 import dateutil.parser
 from irods_capability_automated_ingest.sync_irods import irods_session
 from irods.exception import CAT_SUCCESS_BUT_WITH_NO_INFO
+from irods.meta import iRODSMeta
 
 #: AVU key to use for ``last_update`` attribute.
 KEY_LAST_UPDATE = "omics::ingest::last_update"
@@ -57,7 +58,7 @@ def _post_job_run_folder_done(
     if not is_folder_done(src_folder):
         logger.info("folder %s is not marked as done" % src_folder)
         return
-    # Move it data is considered at rest.
+    # Move if data is considered at rest.
     if last_update_age > delay_until_at_rest:
         logger.info(
             "age of last update of %s is %s (<%s) -- will move to ingested"
@@ -70,15 +71,8 @@ def _post_job_run_folder_done(
             src_folder.rename(new_src_folder)
         except OSError as e:
             logger.error("could not move to ingested: %s" % e)
-        # Remove all old ``status`` meta data.
-        logger.info("Marking destination collection as complete")
-        for meta in dst_collection.metadata.get_all(KEY_STATUS):
-            try:
-                dst_collection.metadata.remove(meta)
-            except CAT_SUCCESS_BUT_WITH_NO_INFO:
-                pass  # swallow
-        # set ``status`` meta data to not running any more.
-        dst_collection.metadata.add(KEY_STATUS, "complete", "")
+        # Update ``status`` meta data.
+        dst_collection.metadata[KEY_STATUS] = iRODSMeta(KEY_STATUS, "complete", "")
     else:
         logger.info(
             "age of last update of %s is %s (<%s) -- not moving to ingested"
@@ -96,7 +90,9 @@ def pre_job(hdlr_mod, logger, meta):
             if src_folder in dst_collections:
                 coll = dst_collections[src_folder]
                 if not coll.metadata.get_all(KEY_FIRST_SEEN):
-                    coll.metadata.add(KEY_FIRST_SEEN, datetime.datetime.now().isoformat(), "")
+                    coll.metadata[KEY_FIRST_SEEN] = iRODSMeta(
+                        KEY_FIRST_SEEN, datetime.datetime.now().isoformat(), ""
+                    )
             else:
                 logger.info("Skipping %s as it corresponds to no destination collection")
 
@@ -138,14 +134,8 @@ def refresh_last_update_metadata(logger, session, meta):
     root_target = str(target)[: -(len(str(rel_folder_path)) + 1)]
     with cleanuping(session) as session:
         coll = session.collections.get(root_target)
-        # Remove all old ``last_update`` meta data.
-        for meta in coll.metadata.get_all(KEY_LAST_UPDATE):
-            try:
-                coll.metadata.remove(meta)
-            except CAT_SUCCESS_BUT_WITH_NO_INFO:
-                pass  # swallow
-        # Add new ``last_update`` meta data.
-        coll.metadata.add(KEY_LAST_UPDATE, datetime.datetime.now().isoformat(), "")
-        # Add new ``status`` meta data if running.
-        if not coll.metadata.get_all(KEY_STATUS):
-            coll.metadata.add(KEY_STATUS, "running", "")
+        # Replace ``last_update`` and ``status`` meta data.
+        coll.metadata[KEY_LAST_UPDATE] = iRODSMeta(
+            KEY_LAST_UPDATE, datetime.datetime.now().isoformat(), ""
+        )
+        coll.metadata[KEY_STATUS] = iRODSMeta(KEY_STATUS, "running", "")
