@@ -36,8 +36,8 @@ from ...common import (
 
 #: This time should pass after the previous update and the existance of the output marker file
 #: for a run folder to be considered at rest and moved away.
-DELAY_UNTIL_AT_REST = datetime.timedelta(minutes=5)
-# DELAY_UNTIL_AT_REST = datetime.timedelta(seconds=5)
+# DELAY_UNTIL_AT_REST = datetime.timedelta(minutes=5)
+DELAY_UNTIL_AT_REST = datetime.timedelta(seconds=5)
 
 
 def apply_runinfo_metadata(session, run_info: RunInfo, target: str) -> None:
@@ -124,7 +124,7 @@ class event_handler(Core):
         refresh_last_update_metadata(logger, session, meta)
 
     @staticmethod
-    def delay(hdlr_mod, logger, meta):
+    def delay(hdlr_mod, logger, meta, retries):
         return 5
 
     @staticmethod
