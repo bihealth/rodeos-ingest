@@ -25,8 +25,10 @@ HASHDEEP_THREADS = 8
 #: Algorithm to use for hashing.
 HASHDEEP_ALGO = "md5"
 
-#: File name for manifest file.
-MANIFEST_FNAME = "_MANIFEST_LOCAL.txt"
+#: File name for local manifest file.
+MANIFEST_LOCAL = "_MANIFEST_LOCAL.txt"
+#: File name for iRODS manifest file.
+MANIFEST_IRODS = "_MANIFEST_IRODS.txt"
 
 
 @contextmanager
@@ -42,6 +44,63 @@ def to_ingested_path(orig_path: typing.Union[str, pathlib.Path]) -> pathlib.Path
     orig_path = pathlib.Path(orig_path)
     ingested_base = orig_path.parent.parent / (orig_path.parent.name + "-INGESTED")
     return ingested_base / orig_path.name
+
+
+def _compare_manifests(path_local, path_irods, dest_coll, logger):
+    """Compare manifests at paths ``path_local`` and ``path_irods``.
+
+    Consider paths in ``path_irods`` relative to ``dest_coll``.
+    """
+    # Load file sizes and checksums.
+    info_local = {}
+    with open(path_local, "rt") as inputf:
+        for line in inputf:
+            if line.startswith("#") or line.startswith("%"):
+                continue
+            line = line.strip()
+            size, chksum, path = line.split(",")
+            info_local[path] = (size, chksum)
+    info_irods = {}
+    with open(path_irods, "rt") as inputf:
+        for line in inputf:
+            if line.startswith("#") or line.startswith("%"):
+                continue
+            line = line.strip()
+            size, chksum, path = line.split(",")
+            path = path.replace(dest_coll, ".")
+            info_local[path] = (size, chksum)
+
+    # Compare file sizes and checksums.
+    ok = True
+    for path in info_local.keys() & info_irods.keys():
+        size_local, chksum_local = info_local[path]
+        size_irods, chksum_irods = info_irods[path]
+        if size_local != size_irods:
+            ok = False
+            logger.error("file size does not match %s vs %s for %s", size_local, size_irods, path)
+        if chksum_local != chksum_irods:
+            ok = False
+            logger.error(
+                "file checksum does not match %s vs %s for %s", chksum_local, chksum_irods, path
+            )
+    # Find extra items on either side.
+    extra_local = info_local.keys() - info_irods.keys()
+    if extra_local:
+        ok = False
+        logger.error(
+            "%d items locally that are not in irods, up to 10 shown:\n  %s"
+            % (len(extra_local), "  \n".join(list(sorted(extra_local))[:10]))
+        )
+    extra_irods = info_irods.keys() - info_local.keys()
+    if extra_irods:
+        ok = False
+        logger.error(
+            "%d items in irods that are not present locally, up to 10 shown:\n  %s"
+            % (len(extra_irods), "  \n".join(list(sorted(extra_irods))[:10]))
+        )
+
+    if not ok:
+        raise RuntimeError("Difference in manifests!")
 
 
 def _post_job_run_folder_done(
@@ -76,16 +135,18 @@ def _post_job_run_folder_done(
             % (dst_collection, last_update_age, delay_until_at_rest)
         )
         # Compute local hashdeep manifest.
-        chk_path = os.path.join(src_folder, MANIFEST_FNAME)
+        local_path = os.path.join(src_folder, MANIFEST_LOCAL)
         logger.info("compute checksums and store to %s", chck_path)
         try:
-            with open(chk_path, "wt") as chk_f:
+            with open(local_path, "wt") as chk_f:
                 p_find = subprocess.Popen(
-                    ("find . -type f -and -not -path ./%s" % MANIFEST_FNAME).split(" "),
+                    ("find . -type f -and -not -path ./%s" % MANIFEST_LOCAL).split(" "),
                     cwd=src_folder,
                 )
                 subprocess.run(
-                    ("hashdeep -c %s -f /dev/stdin -j %s" % (HASHDEEP_ALGO, HASHDEEP_THREADS)).split(" "),
+                    (
+                        "hashdeep -c %s -f /dev/stdin -j %s" % (HASHDEEP_ALGO, HASHDEEP_THREADS)
+                    ).split(" "),
                     stdin=p_find.stdout,
                     stdout=chk_f,
                     encoding="utf-8",
@@ -96,12 +157,50 @@ def _post_job_run_folder_done(
                         "Problem running find: %s" % p_find.returncode
                     )
         except subprocess.CalledProcessError as e:
-            logger.warn("Computing checksums failed: %s", e)
-            os.remove(chk_path)
-        # Put hashdeep manifest.
-        manifest_dest = os.path.join(dst_collection, MANIFEST_FNAME)
-        session.data_objects.put(chk_path, manifest_dest)
-        run_ichksum(manifest_dest)
+            logger.warn("Computing checksums failed, aborting: %s", e)
+            os.remove(local_path)
+            return
+        # Compute manifest from irods checksums.
+        logger.info("pull irods checksums into manifest")
+        irods_path = os.path.join(src_folder, MANIFEST_IRODS)
+        try:
+            with open(irods_path, "wt") as chk_f:
+                # Obtain information for files directly in destination collection.
+                cmd = [
+                    "iquest",
+                    "%d,%s,%s/%s",
+                    (
+                        "SELECT DATA_SIZE, DATA_CHECKSUM, COLL_NAME, DATA_NAME "
+                        "WHERE COLL_NAME = '%s' AND DATA_NAME != '%s' AND DATA_NAME != '%s'"
+                    )
+                    % (dst_collection, MANIFEST_LOCAL, MANIFEST_IRODS),
+                ]
+                subprocess.run(cmd, stdout=chk_f, encoding="utf-8", check=True)
+                # Obtain information for files destination subcollections.
+                cmd_sub = [
+                    "iquest",
+                    "%d,%s,%s/%s",
+                    (
+                        "SELECT DATA_SIZE, DATA_CHECKSUM, COLL_NAME, DATA_NAME "
+                        "WHERE COLL_NAME like '%s/%'"
+                    )
+                    % dst_collection,
+                ]
+                subprocess.run(cmd_sub, stdout=chk_f, encoding="utf-8", check=True)
+        except subprocess.CalledProcessError as e:
+            logger.warn("Creation of iRODS manifest failed, aborting: %s", e)
+            os.remove(irods_path)
+            return
+        # Compare the manifest files.
+        _compare_manifests(local_manifest_dest, irods_manifest_dest, dst_collection, logger)
+        # Put local hashdeep manifest.
+        local_manifest_dest = os.path.join(dst_collection, MANIFEST_LOCAL)
+        session.data_objects.put(local_path, local_manifest_dest)
+        run_ichksum(local_manifest_dest)
+        # Put manifest built from irods.
+        irods_manifest_dest = os.path.join(dst_collection, MANIFEST_IRODS)
+        session.data_objects.put(irods_path, irods_manifest_dest)
+        run_ichksum(irods_manifest_dest)
         # Move folder.
         new_src_folder = to_ingested_path(src_folder)
         logger.info("attempting move %s => %s" % (src_folder, new_src_folder))
