@@ -21,6 +21,7 @@ from ...common import (
     pre_job as common_pre_job,
     post_job as common_post_job,
     refresh_last_update_metadata,
+    run_ichksum,
 )
 
 #: This time should pass after the previous update and the existance of the output marker file
@@ -53,10 +54,12 @@ class event_handler(Core):
     @staticmethod
     def post_data_obj_create(hdlr_mod, logger, session, meta, **options):
         refresh_last_update_metadata(logger, session, meta)
+        run_ichksum(meta["target"])
 
     @staticmethod
     def post_data_obj_update(hdlr_mod, logger, session, meta, **options):
         refresh_last_update_metadata(logger, session, meta)
+        run_ichksum(meta["target"])
 
     @staticmethod
     def delay(hdlr_mod, logger, meta):

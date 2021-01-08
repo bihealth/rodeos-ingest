@@ -32,6 +32,7 @@ from ...common import (
     pre_job as common_pre_job,
     post_job as common_post_job,
     refresh_last_update_metadata,
+    run_ichksum,
 )
 
 
@@ -116,6 +117,7 @@ class event_handler(Core):
         initial upload and update."""
         _post_runinfoxml_create_or_update(logger, session, meta)
         refresh_last_update_metadata(logger, session, meta)
+        run_ichksum(meta["target"])
 
     @staticmethod
     def post_data_obj_update(hdlr_mod, logger, session, meta, **options):
@@ -123,6 +125,7 @@ class event_handler(Core):
         initial upload and update."""
         _post_runinfoxml_create_or_update(logger, session, meta)
         refresh_last_update_metadata(logger, session, meta)
+        run_ichksum(meta["target"])
 
     @staticmethod
     def delay(hdlr_mod, logger, meta, retries):

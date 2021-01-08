@@ -101,6 +101,7 @@ def _post_job_run_folder_done(
         # Put hashdeep manifest.
         manifest_dest = os.path.join(dst_collection, MANIFEST_FNAME)
         session.data_objects.put(chk_path, manifest_dest)
+        run_ichksum(manifest_dest)
         # Move folder.
         new_src_folder = to_ingested_path(src_folder)
         logger.info("attempting move %s => %s" % (src_folder, new_src_folder))
@@ -177,3 +178,8 @@ def refresh_last_update_metadata(logger, session, meta):
             KEY_LAST_UPDATE, datetime.datetime.now().isoformat(), ""
         )
         coll.metadata[KEY_STATUS] = iRODSMeta(KEY_STATUS, "running", "")
+
+
+def run_ichksum(irods_path: str) -> None:
+    """Run ``ichksum $irods_path``."""
+    subprocess.check_output(["ichksum", irods_path])

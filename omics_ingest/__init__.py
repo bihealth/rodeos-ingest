@@ -5,5 +5,5 @@ del get_versions
 
 from ._check_path import _check_executables_in_path
 
-_check_executables_in_path(["hashdeep", "sort", "find"])
+_check_executables_in_path(["hashdeep", "sort", "find", "ichksum"])
 del _check_executables_in_path
