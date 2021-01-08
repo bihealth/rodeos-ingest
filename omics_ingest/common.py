@@ -2,7 +2,10 @@
 
 from contextlib import contextmanager
 import datetime
+import os
+import os.path
 import pathlib
+import subprocess
 import typing
 
 import dateutil.parser
@@ -16,6 +19,14 @@ KEY_LAST_UPDATE = "omics::ingest::last_update"
 KEY_STATUS = "omics::ingest::status"
 #: AVU key to use for ``first_seen`` attribute.
 KEY_FIRST_SEEN = "omics::ingest::first_seen"
+
+#: Number of threads to run hashdeep with.
+HASHDEEP_THREADS = 8
+#: Algorithm to use for hashing.
+HASHDEEP_ALGO = "md5"
+
+#: File name for manifest file.
+MANIFEST_FNAME = "_MANIFEST_LOCAL.txt"
 
 
 @contextmanager
@@ -58,12 +69,39 @@ def _post_job_run_folder_done(
     if not is_folder_done(src_folder):
         logger.info("folder %s is not marked as done" % src_folder)
         return
-    # Move if data is considered at rest.
+    # Compute and check manifest and move if data is considered at rest.
     if last_update_age > delay_until_at_rest:
         logger.info(
-            "age of last update of %s is %s (<%s) -- will move to ingested"
+            "age of last update of %s is %s (<%s) -- will finalize (manifest+move)"
             % (dst_collection, last_update_age, delay_until_at_rest)
         )
+        # Compute local hashdeep manifest.
+        chk_path = os.path.join(src_folder, MANIFEST_FNAME)
+        logger.info("compute checksums and store to %s", chck_path)
+        try:
+            with open(chk_path, "wt") as chk_f:
+                p_find = subprocess.Popen(
+                    ("find . -type f -and -not -path ./%s" % MANIFEST_FNAME).split(" "),
+                    cwd=src_folder,
+                )
+                subprocess.run(
+                    ("hashdeep -c %s -f /dev/stdin -j %s" % (HASHDEEP_ALGO, HASHDEEP_THREADS)).split(" "),
+                    stdin=p_find.stdout,
+                    stdout=chk_f,
+                    encoding="utf-8",
+                    check=True,
+                )
+                if p_find.wait() != 0:
+                    raise subprocess.CalledProcessError(
+                        "Problem running find: %s" % p_find.returncode
+                    )
+        except subprocess.CalledProcessError as e:
+            logger.warn("Computing checksums failed: %s", e)
+            os.remove(chk_path)
+        # Put hashdeep manifest.
+        manifest_dest = os.path.join(dst_collection, MANIFEST_FNAME)
+        session.data_objects.put(chk_path, manifest_dest)
+        # Move folder.
         new_src_folder = to_ingested_path(src_folder)
         logger.info("attempting move %s => %s" % (src_folder, new_src_folder))
         try:
