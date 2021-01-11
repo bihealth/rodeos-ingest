@@ -2,7 +2,7 @@
 
 import pathlib
 import typing
-import defusedxml.ElementTree as ET
+import defusedxml.ElementTree as ET  # noqa
 
 import attr
 
@@ -120,7 +120,7 @@ def parse_netcopy_complete_txt(path: str) -> typing.Optional[NetcopyInfo]:
                 return None
             else:
                 return NetcopyInfo(*line.split(","))
-    except IOError as _e:
+    except IOError:
         return None
 
 

@@ -11,7 +11,6 @@ import typing
 
 import dateutil.parser
 from irods_capability_automated_ingest.sync_irods import irods_session
-from irods.exception import CAT_SUCCESS_BUT_WITH_NO_INFO
 from irods.meta import iRODSMeta
 
 #: AVU key to use for ``last_update`` attribute.
@@ -47,11 +46,8 @@ def to_ingested_path(orig_path: typing.Union[str, pathlib.Path]) -> pathlib.Path
     return ingested_base / orig_path.name
 
 
-def _compare_manifests(path_local, path_irods, dest_coll, logger):
-    """Compare manifests at paths ``path_local`` and ``path_irods``.
-
-    Consider paths in ``path_irods`` relative to ``dest_coll``.
-    """
+def _compare_manifests(path_local, path_irods, logger):
+    """Compare manifests at paths ``path_local`` and ``path_irods``."""
     # Load file sizes and checksums.
     info_local = {}
     with open(path_local, "rt") as inputf:
@@ -139,23 +135,22 @@ def _post_job_run_folder_done(
         logger.info("compute checksums and store to %s" % local_path)
         try:
             with open(local_path, "wt") as chk_f:
+                cmd_find = [
+                    "find",
+                    ".",
+                    "-type",
+                    "f",
+                    "-and",
+                    "-not",
+                    "-path",
+                    "./%s" % MANIFEST_LOCAL,
+                    "-and",
+                    "-not",
+                    "-path",
+                    "./%s" % MANIFEST_IRODS,
+                ]
                 p_find = subprocess.Popen(  # nosec
-                    [
-                        "find",
-                        ".",
-                        "-type",
-                        "f",
-                        "-and",
-                        "-not",
-                        "-path",
-                        "./%s" % MANIFEST_LOCAL,
-                        "-and",
-                        "-not",
-                        "-path",
-                        "./%s" % MANIFEST_IRODS,
-                    ],
-                    cwd=src_folder,
-                    stdout=subprocess.PIPE,
+                    cmd_find, cwd=src_folder, stdout=subprocess.PIPE,
                 )
                 subprocess.run(  # nosec
                     [
@@ -175,7 +170,7 @@ def _post_job_run_folder_done(
                 )
                 if p_find.wait() != 0:
                     raise subprocess.CalledProcessError(
-                        "Problem running find: %s" % p_find.returncode
+                        cmd_find, "Problem running find: %s" % p_find.returncode
                     )
         except subprocess.CalledProcessError as e:
             logger.warn("Computing checksums failed, aborting: %s" % e)
@@ -223,7 +218,7 @@ def _post_job_run_folder_done(
             os.remove(irods_path)
             return
         # Compare the manifest files.
-        _compare_manifests(local_path, irods_path, dst_collection.path, logger)
+        _compare_manifests(local_path, irods_path, logger)
         # Put local hashdeep manifest.
         local_manifest_dest = os.path.join(dst_collection.path, MANIFEST_LOCAL)
         session.data_objects.put(local_path, local_manifest_dest)
@@ -294,6 +289,7 @@ def post_job(
 
 def refresh_last_update_metadata(logger, session, meta):
     """Update the ``last_update`` and ``status`` meta data value."""
+    _ = logger
     # Get path in irods that corresponds to root and update the meta data there.
     path = pathlib.Path(meta["path"])
     root = pathlib.Path(meta["root"])
@@ -301,8 +297,8 @@ def refresh_last_update_metadata(logger, session, meta):
     rel_root_path = path.relative_to(root)  # relative to root
     rel_folder_path = "/".join(str(rel_root_path).split("/")[1:])  # relative to run folder
     root_target = str(target)[: -(len(str(rel_folder_path)) + 1)]
-    with cleanuping(session) as session:
-        coll = session.collections.get(root_target)
+    with cleanuping(session) as wrapped_session:
+        coll = wrapped_session.collections.get(root_target)
         # Replace ``last_update`` and ``status`` meta data.
         coll.metadata[KEY_LAST_UPDATE] = iRODSMeta(
             KEY_LAST_UPDATE, datetime.datetime.now().isoformat(), ""

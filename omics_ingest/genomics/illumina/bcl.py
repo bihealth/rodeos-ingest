@@ -17,7 +17,6 @@ import typing
 from irods.meta import iRODSMeta
 from irods_capability_automated_ingest.core import Core
 from irods_capability_automated_ingest.utils import Operation
-from irods_capability_automated_ingest.sync_irods import irods_session
 
 from .run_folder import (
     parse_runinfo_xml,

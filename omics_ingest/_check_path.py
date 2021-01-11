@@ -12,7 +12,7 @@ def _executable_in_path(name: str) -> typing.Union[str, bool]:
     Return path to executable or ``True`` if output is empty.  Returns ``False``
     if ``which`` could not find it.
     """
-    res = subprocess.run(  # nosec
+    res = subprocess.run(  # nosec # noqa
         ["which", name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=1, encoding="utf-8"
     )
     if res.returncode == 0:
