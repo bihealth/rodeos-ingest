@@ -3,5 +3,8 @@
 import pytest
 
 
-def test_pass(redisdb):
+def test_pass(redisdb, irods):
+    irods.create_user("ingest", "ingest")
+    irods.create_collection("/%s/some" % irods.zone_name, "ingest")
+    irods.create_collection("/%s/some/path" % irods.zone_name, "ingest")
     assert True

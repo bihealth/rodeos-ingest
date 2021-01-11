@@ -87,7 +87,7 @@ jobs:
         run: pip install -e .
       # Run tests -----------------------------------------------------------
       - name: run tests
-        run: pytest tests/*.py
+        run: pytest tests/test_*.py
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@master
         with:
