@@ -18,4 +18,25 @@ Code for ingesting omics data into omics storage based on iRODS capabilities
 
 ## Developer Information
 
+### Commit Message Emojis
+
 - https://robinpokorny.github.io/git3moji/
+
+## Development Setup
+
+- install redis or run via docker
+- add `redis` to `/etc/hosts` with appropriate IP (e.g., localhost)
+- install irods or run via docker
+- add `irods` to `/etc/hosts` with appropriate IP (e.g., localhost)
+- setup `.irods/irods_environment.json` file, e.g.
+    ```json
+    {
+    "irods_host": "irods",
+    "irods_port": 1247,
+    "irods_authentication_scheme": "NATIVE",
+    "irods_default_hash_scheme": "MD5",
+    "irods_zone_name": "tempZone",
+    "irods_user_name": "rods",
+    "irods_password": "rods"
+    }
+    ```
