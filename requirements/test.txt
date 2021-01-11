@@ -1,1 +1,14 @@
 -r base.txt
+
+
+pytest
+pytest-mock
+pytest-coverage
+pytest-pep8
+pytest-redis
+
+bandit
+
+pyflakes
+
+prospector

@@ -19,7 +19,11 @@ def parse_requirements(path):
                 inner_path = os.path.join(os.path.dirname(path), fname)
                 requirements += parse_requirements(inner_path)
             elif line != "" and not line.startswith("#"):
-                requirements.append(line)
+                if line.startswith("-e"):
+                    url, name = line.split()[1].split("#egg=", 1)
+                    requirements.append("%s @ %s" % (name, url))
+                else:
+                    requirements.append(line)
     return requirements
 
 

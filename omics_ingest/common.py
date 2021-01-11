@@ -5,7 +5,7 @@ import datetime
 import os
 import os.path
 import pathlib
-import subprocess
+import subprocess  # nosec
 import tempfile
 import typing
 
@@ -139,7 +139,7 @@ def _post_job_run_folder_done(
         logger.info("compute checksums and store to %s" % local_path)
         try:
             with open(local_path, "wt") as chk_f:
-                p_find = subprocess.Popen(
+                p_find = subprocess.Popen(  # nosec
                     [
                         "find",
                         ".",
@@ -157,7 +157,7 @@ def _post_job_run_folder_done(
                     cwd=src_folder,
                     stdout=subprocess.PIPE,
                 )
-                subprocess.run(
+                subprocess.run(  # nosec
                     [
                         "hashdeep",
                         "-c",
@@ -196,7 +196,7 @@ def _post_job_run_folder_done(
                     )
                     % (dst_collection.path, MANIFEST_LOCAL, MANIFEST_IRODS),
                 ]
-                subprocess.run(cmd, stdout=tmp_f, encoding="utf-8", check=True)
+                subprocess.run(cmd, stdout=tmp_f, encoding="utf-8", check=True)  # nosec
                 # Obtain information for files destination subcollections.
                 cmd_sub = [
                     "iquest",
@@ -207,7 +207,7 @@ def _post_job_run_folder_done(
                     )
                     % dst_collection.path,
                 ]
-                subprocess.run(cmd_sub, stdout=tmp_f, encoding="utf-8", check=True)
+                subprocess.run(cmd_sub, stdout=tmp_f, encoding="utf-8", check=True)  # nosec
                 # Copy to final output file.
                 tmp_f.flush()
                 tmp_f.seek(0)
