@@ -5,6 +5,7 @@
     "irods_default_hash_scheme": "MD5",
     "irods_zone_name": "tempZone",
     "irods_user_name": "rods",
+    "irods_password": "rods",
     "irods_cwd": "/tempZone/home/rods",
     "irods_home": "/tempZone/home/rods"
 }
