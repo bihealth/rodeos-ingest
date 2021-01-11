@@ -12,10 +12,8 @@ import datetime
 import pathlib
 import typing
 
-import dateutil.parser
 from irods_capability_automated_ingest.core import Core
 from irods_capability_automated_ingest.utils import Operation
-from irods_capability_automated_ingest.sync_irods import irods_session
 
 from ...common import (
     pre_job as common_pre_job,
