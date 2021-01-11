@@ -2,7 +2,7 @@
 
 import pathlib
 import typing
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 import attr
 
@@ -125,8 +125,7 @@ def parse_netcopy_complete_txt(path: str) -> typing.Optional[NetcopyInfo]:
 
 
 def runparameters_to_marker_file(
-    run_parameters: typing.Dict[str, str],
-    path: typing.Union[str, pathlib.Path],
+    run_parameters: typing.Dict[str, str], path: typing.Union[str, pathlib.Path],
 ) -> typing.Tuple[str]:
     """Takes a run parameters dictionary and returns the name of the marker file."""
     p = RUN_PARAMETERS_AVU_KEY_PREFIX

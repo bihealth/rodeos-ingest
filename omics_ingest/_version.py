@@ -12,7 +12,7 @@
 import errno
 import os
 import re
-import subprocess
+import subprocess  # nosec
 import sys
 
 

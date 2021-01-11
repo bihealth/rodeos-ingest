@@ -1,0 +1,99 @@
+name: CI
+on: push
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    # MUST be run on container for Docker network to work.
+    container: ubuntu:bionic
+    strategy:
+      matrix:
+        python-version:
+          # - "3.6"
+          # - "3.7"
+          - "3.8"
+
+    services:
+      irods:
+        image: mjstealey/irods-provider-postgres:4.2.4
+        ports:
+          - 1247:1247
+          - 20000-20199:20000-20199
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      # Software Installation -----------------------------------------------
+      - name: add base dependency repositories and update
+        run: |
+          apt update
+          apt install -y software-properties-common
+          add-apt-repository ppa:git-core/ppa
+      - name: install packages
+        run: apt install -y git git-lfs hashdeep
+      - name: checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: install some core packages
+        run: |
+          apt-get update
+          apt-get install -y wget debianutils python
+      - name: install miniconda3
+        run: |
+          cd /tmp
+          wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+          bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3
+          rm -f Miniconda3-latest-Linux-x86_64.sh
+          echo "CONDA=/opt/miniconda3" >> $GITHUB_ENV
+      - name: install Python via conda
+        uses: s-weigand/setup-conda@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          conda-channels: defaults,bioconda,conda-forge
+      - name: install irods repository
+        run: |
+          wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add -
+          echo "deb [arch=amd64] https://packages.irods.org/apt/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/renci-irods.list
+          apt-get update
+      - name: install irods-icommands
+        run: apt install -y irods-icommands
+      # iRODS: auth as user rods --------------------------------------------
+      - name: create ~/.irods
+        run: mkdir -p ~/.irods
+      - name: copy file irods_environment.json for rods user
+        run: cp .github/workflows/ci/irods_environment-rods.json ~/.irods/irods_environment.json
+      - name: authenticate as rods user
+        run: echo rods | iinit
+      # iRODS: create user ingest -------------------------------------------
+      - name: run ils
+        run: ils
+      - name: create ingest user
+        run: iadmin mkuser ingest rodsuser
+      - name: set password for ingest user
+        run: iadmin moduser ingest password ingest
+      # Install package -----------------------------------------------------
+      - name: install requirements
+        run: pip install -r requirements/test.txt
+      - name: Install test dependencies via pip (black only on Python 3.8)
+        run: pip install -r requirements/test_black.txt
+        if: ${{ matrix.python-version == '3.8' }}
+      - name: install software
+        run: pip install -e .
+      # Run tests -----------------------------------------------------------
+      - name: run tests
+        run: pytest tests/*.py
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml
+        if: ${{ matrix.python-version == '3.8' }}
+      - name: Check style with black (only on Python 3.8)
+        run: black --line-length 100 --check .
+        if: ${{ matrix.python-version == '3.8' }}
