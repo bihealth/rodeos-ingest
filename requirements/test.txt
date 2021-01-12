@@ -4,6 +4,7 @@
 pytest
 pytest-mock
 pytest-coverage
+pytest-env
 pytest-pep8
 pytest-redis
 

@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<RunParameters xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <RunParametersVersion>MiniSeq_2_0_0</RunParametersVersion>
+  <Setup>
+    <SupportMultipleSurfacesInUI>true</SupportMultipleSurfacesInUI>
+    <ApplicationVersion>2.0.0.16</ApplicationVersion>
+    <ApplicationName>MiniSeq Control Software</ApplicationName>
+    <NumTilesPerSwath>6</NumTilesPerSwath>
+    <NumSwaths>3</NumSwaths>
+    <NumLanes>1</NumLanes>
+    <Read1>151</Read1>
+    <Read2>151</Read2>
+    <Index1Read>8</Index1Read>
+    <Index2Read>8</Index2Read>
+    <SectionPerLane>1</SectionPerLane>
+    <LanePerSection>1</LanePerSection>
+  </Setup>
+  <RunID>201012_MN00157_0067_A000H37JYL</RunID>
+  <InstrumentID>MN00157</InstrumentID>
+  <RunNumber>67</RunNumber>
+  <RTAVersion>2.11.4.0</RTAVersion>
+  <SystemSuiteVersion>2.0.0.16</SystemSuiteVersion>
+  <LocalRunManagerVersion>2.4.1.2636</LocalRunManagerVersion>
+  <RecipeVersion>2.0.0.5</RecipeVersion>
+  <FirmwareVersion>r.1.0.3</FirmwareVersion>
+  <FlowCellRfidTag>
+    <SerialNumber>000H37JYL</SerialNumber>
+    <PartNumber>15073184</PartNumber>
+    <LotNumber>20474090</LotNumber>
+    <ExpirationDate>2021-08-26T00:00:00</ExpirationDate>
+  </FlowCellRfidTag>
+  <ReagentKitRfidTag>
+    <SerialNumber>ML2122136-REAGT</SerialNumber>
+    <PartNumber>20001311</PartNumber>
+    <LotNumber>20464829</LotNumber>
+    <ExpirationDate>2021-07-15T00:00:00</ExpirationDate>
+  </ReagentKitRfidTag>
+  <FlowCellSerial>000H37JYL</FlowCellSerial>
+  <ReagentKitSerial>ML2122136-REAGT</ReagentKitSerial>
+  <ExperimentName>The Experiment Name</ExperimentName>
+  <LibraryID>KR_VTC_004</LibraryID>
+  <RunDescription />
+  <Chemistry>MiniSeq Mid</Chemistry>
+  <SelectedTiles>
+    <Tile>1_11101</Tile>
+    <Tile>1_21101</Tile>
+    <Tile>1_11102</Tile>
+    <Tile>1_21102</Tile>
+    <Tile>1_11103</Tile>
+    <Tile>1_21103</Tile>
+    <Tile>1_11104</Tile>
+    <Tile>1_21104</Tile>
+    <Tile>1_12101</Tile>
+    <Tile>1_22101</Tile>
+    <Tile>1_12102</Tile>
+    <Tile>1_22102</Tile>
+    <Tile>1_12103</Tile>
+    <Tile>1_22103</Tile>
+    <Tile>1_12104</Tile>
+    <Tile>1_22104</Tile>
+    <Tile>1_13101</Tile>
+    <Tile>1_23101</Tile>
+    <Tile>1_13102</Tile>
+    <Tile>1_23102</Tile>
+    <Tile>1_13103</Tile>
+    <Tile>1_23103</Tile>
+    <Tile>1_13104</Tile>
+    <Tile>1_23104</Tile>
+  </SelectedTiles>
+  <RunFolder>D:\Illumina\MiniSeq Sequencing Temp\201012_MN00157_0067_A000H37JYL\</RunFolder>
+  <PreRunFolderRoot>D:\Illumina\MiniSeq PreRun</PreRunFolderRoot>
+  <PreRunFolder>D:\Illumina\MiniSeq PreRun\MN00157_2020-10-12__11_08_58</PreRunFolder>
+  <OutputFolder>\\bimsb-fs02\basecalls\.seq_mn00157\201012_MN00157_0067_A000H37JYL\</OutputFolder>
+  <RecipeFolder>C:\Program Files\Illumina\MiniSeq Control Software\Recipe\Mid\v1</RecipeFolder>
+  <SimulationFolder />
+  <RunStartDate>201012</RunStartDate>
+  <FocusMethod>IXFocus</FocusMethod>
+  <SurfaceToScan>Both</SurfaceToScan>
+  <SaveFocusImages>false</SaveFocusImages>
+  <SaveScanImages>false</SaveScanImages>
+  <SelectiveSave>true</SelectiveSave>
+  <IsPairedEnd>true</IsPairedEnd>
+  <CustomReadOnePrimer>BP10</CustomReadOnePrimer>
+  <CustomReadTwoPrimer>BP11</CustomReadTwoPrimer>
+  <CustomIndexPrimer>BP14</CustomIndexPrimer>
+  <CustomIndexTwoPrimer>BP14</CustomIndexTwoPrimer>
+  <UsesCustomReadOnePrimer>false</UsesCustomReadOnePrimer>
+  <UsesCustomReadTwoPrimer>false</UsesCustomReadTwoPrimer>
+  <UsesCustomIndexPrimer>false</UsesCustomIndexPrimer>
+  <UsesCustomIndexTwoPrimer>false</UsesCustomIndexTwoPrimer>
+  <RunSetupType>ManualRunSetup</RunSetupType>
+  <RunMode>PerformanceDataOnly</RunMode>
+  <ComputerName>SEQ-MN157</ComputerName>
+  <SequencingStarted>true</SequencingStarted>
+  <PlannedRead1Cycles>151</PlannedRead1Cycles>
+  <PlannedRead2Cycles>151</PlannedRead2Cycles>
+  <PlannedIndex1ReadCycles>8</PlannedIndex1ReadCycles>
+  <PlannedIndex2ReadCycles>8</PlannedIndex2ReadCycles>
+  <IsRehyb>false</IsRehyb>
+  <PurgeConsumables>true</PurgeConsumables>
+  <MaxCyclesSupportedByReagentKit>318</MaxCyclesSupportedByReagentKit>
+  <RunStartTimeStamp>2020-10-12T11:21:42.4657601+02:00</RunStartTimeStamp>
+  <CopyServiceRunId>174C8DF56B714D9E</CopyServiceRunId>
+  <LocalRunManagerRunId xsi:nil="true" />
+  <LocalRunManagerUserName />
+  <ModuleName />
+  <ModuleVersion />
+  <StateDescription />
+  <BaseSpaceUserName />
+  <BaseSpaceRunId>197821658</BaseSpaceRunId>
+</RunParameters>

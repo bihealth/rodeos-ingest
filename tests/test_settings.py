@@ -1,10 +1,6 @@
 """Test the settings of ``omics_ingest``"""
 
-import os
-
-os.environ["RODEOS_DELAY_UNTIL_AT_REST_SECONDS"] = "1"
-
-from omics_ingest import settings  # noqa
+from omics_ingest import settings
 
 
 def test_adjusted_settings():

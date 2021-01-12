@@ -38,7 +38,7 @@ class RunInfo:
 def parse_runinfo_xml(path: str) -> RunInfo:
     """Parse information from ``RunInfo.xml`` and return ``RunInfo`` object."""
     tree = ET.parse(path)
-    tag_run = tree.find("//Run")
+    tag_run = tree.find(".//Run")
     return RunInfo(
         run_id=tag_run.attrib["Id"],
         run_number=int(tag_run.attrib["Number"]),
@@ -69,6 +69,7 @@ RUN_PARAMETERS_XPATH_MAP = {
     ".//ReagentKitRFIDTag/ExpirationDate": "reagent_kit_rfid_tag::expiration_date",
     ".//RunID": "run_id",
     ".//ScannerID": "scanner_id",
+    ".//ScanNumber": "scan_number",
     ".//RunNumber": "run_number",
     ".//FPGAVersion": "fpga_version",
     ".//MCSVersion": "mcs_version",
@@ -116,11 +117,11 @@ def parse_netcopy_complete_txt(path: str) -> typing.Optional[NetcopyInfo]:
     try:
         with open(path, "rt") as inputf:
             line = inputf.readline().strip()
-            if line.count(",") != 2:
+            if line.count(",") != 2:  # pragma: no cover
                 return None
             else:
                 return NetcopyInfo(*line.split(","))
-    except IOError:
+    except IOError:  # pragma: no cover
         return None
 
 
@@ -139,7 +140,7 @@ def runparameters_to_marker_file(
         return ("Basecalling_Netcopy_complete.txt", "ImageAnalysis_Netcopy_complete.txt")
     elif "miniseq" in run_parameters.get("%s::application_name" % p, "").lower():
         return ("RTAComplete.txt",)
-    else:
+    else:  # pragma: no cover
         raise UnknownInstrumentType(
             "Cannot determine instrument type from run parameters XML file: %s" % path
         )
