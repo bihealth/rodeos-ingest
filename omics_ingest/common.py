@@ -1,5 +1,6 @@
 """Common code for the omics ingest."""
 
+from contextlib import contextmanager
 import datetime
 import os
 import os.path

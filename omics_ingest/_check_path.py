@@ -14,9 +14,9 @@ def _executable_in_path(name: str) -> typing.Union[str, bool]:
     Return path to executable or ``True`` if output is empty.  Returns ``False``
     if ``which`` could not find it.
     """
-    if not RODEOS_LOOK_FOR_EXECUTABLES:
+    if not RODEOS_LOOK_FOR_EXECUTABLES:  # pragma: no cover
         return False
-    else:  # pragma: no cover
+    else:
         res = subprocess.run(  # nosec
             ["which", name],
             stdout=subprocess.PIPE,
@@ -26,13 +26,13 @@ def _executable_in_path(name: str) -> typing.Union[str, bool]:
         )  # noqa
         if res.returncode == 0:
             return res.stdout or True
-        else:
+        else:  # pragma: no cover
             return False
 
 
 def _check_executables_in_path(names: typing.List[str]) -> None:
     """Checks whether/that executables in ``names`` are in the path."""
     problematic = [name for name in names if not _executable_in_path(name)]
-    if problematic:
+    if problematic:  # pragma: no cover
         tpl = "The following executable(s) are required but not in PATH: %s"
         raise RuntimeError(tpl % ", ".join(problematic))
