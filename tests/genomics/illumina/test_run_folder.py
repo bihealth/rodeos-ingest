@@ -8,7 +8,6 @@ from omics_ingest.genomics.illumina.run_folder import (
     parse_runinfo_xml,
     parse_runparameters_xml,
     RUN_PARAMETERS_AVU_KEY_PREFIX,
-    RUN_INFO_AVU_KEY_PREFIX,
 )
 
 

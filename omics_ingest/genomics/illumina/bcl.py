@@ -92,6 +92,7 @@ def is_runfolder_done(path: typing.Union[str, pathlib.Path]) -> bool:
                 parse_runparameters_xml(path / name), path / name
             )
             return all((path / marker).exists() for marker in markers)
+    return False
 
 
 class event_handler(Core):
@@ -104,11 +105,12 @@ class event_handler(Core):
     @staticmethod
     def post_job(hdlr_mod, logger, meta):
         """Move completed and at rest run folders into the "ingested" area."""
+        _, _, _ = hdlr_mod, logger, meta
 
     @staticmethod
     def operation(session, meta, **options):
         """Return ``Operation.PUT_SYNC`` to also put changed files."""
-        _ = options
+        _, _, _ = session, meta, options
         return Operation.PUT_SYNC
 
     @staticmethod
@@ -131,8 +133,10 @@ class event_handler(Core):
 
     @staticmethod
     def delay(hdlr_mod, logger, meta, retries):
+        _, _, _, _ = hdlr_mod, logger, meta, retries
         return 5
 
     @staticmethod
     def max_retries(hdlr_mod, logger, meta):
+        _, _, _ = hdlr_mod, logger, meta
         return 10
