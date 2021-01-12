@@ -21,11 +21,11 @@ from ...common import (
     refresh_last_update_metadata,
     run_ichksum,
 )
+from ..settings import RODEOS_DELAY_UNTIL_AT_REST_SECONDS
 
 #: This time should pass after the previous update and the existance of the output marker file
 #: for a run folder to be considered at rest and moved away.
-DELAY_UNTIL_AT_REST = datetime.timedelta(minutes=5)
-# DELAY_UNTIL_AT_REST = datetime.timedelta(seconds=15)
+DELAY_UNTIL_AT_REST = datetime.timedelta(seconds=RODEOS_DELAY_UNTIL_AT_REST_SECONDS)
 
 
 def is_demuxfolder_done(path: typing.Union[str, pathlib.Path]) -> bool:

@@ -12,6 +12,8 @@ import dateutil.parser
 from irods_capability_automated_ingest.sync_irods import irods_session
 from irods.meta import iRODSMeta
 
+from .settings import RODEOS_HASHDEEP_ALGO, RODEOS_HASHDEEP_THREADS
+
 #: AVU key to use for ``last_update`` attribute.
 KEY_LAST_UPDATE = "omics::ingest::last_update"
 #: AVU key to use destionation run folder ingestion status.
@@ -20,9 +22,9 @@ KEY_STATUS = "omics::ingest::status"
 KEY_FIRST_SEEN = "omics::ingest::first_seen"
 
 #: Number of threads to run hashdeep with.
-HASHDEEP_THREADS = 8
+HASHDEEP_THREADS = RODEOS_HASHDEEP_THREADS
 #: Algorithm to use for hashing.
-HASHDEEP_ALGO = "md5"
+HASHDEEP_ALGO = RODEOS_HASHDEEP_ALGO
 
 #: File name for local manifest file.
 MANIFEST_LOCAL = "_MANIFEST_LOCAL.txt"
