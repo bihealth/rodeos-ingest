@@ -26,7 +26,7 @@ from .run_folder import (
     RunInfo,
     NetcopyInfo,
 )
-from ...common import (
+from ..common import (
     cleanuping,
     pre_job as common_pre_job,
     post_job as common_post_job,
@@ -108,12 +108,14 @@ class event_handler(Core):
     @staticmethod
     def operation(session, meta, **options):
         """Return ``Operation.PUT_SYNC`` to also put changed files."""
+        _ = options
         return Operation.PUT_SYNC
 
     @staticmethod
     def post_data_obj_create(hdlr_mod, logger, session, meta, **options):
         """Update run folder meta data from ``RunInfo.xml`` and ``runParameters.xml`` files after
         initial upload and update."""
+        _, _ = hdlr_mod, options
         _post_runinfoxml_create_or_update(logger, session, meta)
         refresh_last_update_metadata(logger, session, meta)
         run_ichksum(meta["target"])
@@ -122,6 +124,7 @@ class event_handler(Core):
     def post_data_obj_update(hdlr_mod, logger, session, meta, **options):
         """Update run folder meta data from ``RunInfo.xml`` and ``runParameters.xml`` files after
         initial upload and update."""
+        _, _ = hdlr_mod, options
         _post_runinfoxml_create_or_update(logger, session, meta)
         refresh_last_update_metadata(logger, session, meta)
         run_ichksum(meta["target"])

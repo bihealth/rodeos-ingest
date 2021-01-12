@@ -43,26 +43,32 @@ class event_handler(Core):
     @staticmethod
     def post_job(hdlr_mod, logger, meta):
         """Move completed and at rest run folders into the "ingested" area."""
+        _, _, _ = hdlr_mod, logger, meta
 
     @staticmethod
     def operation(session, meta, **options):
         """Return ``Operation.PUT_APPEND`` to only upload new data."""
+        _, _, _ = session, meta, options
         return Operation.PUT_APPEND
 
     @staticmethod
     def post_data_obj_create(hdlr_mod, logger, session, meta, **options):
+        _, _ = hdlr_mod, options
         refresh_last_update_metadata(logger, session, meta)
         run_ichksum(meta["target"])
 
     @staticmethod
     def post_data_obj_update(hdlr_mod, logger, session, meta, **options):
+        _, _ = hdlr_mod, options
         refresh_last_update_metadata(logger, session, meta)
         run_ichksum(meta["target"])
 
     @staticmethod
     def delay(hdlr_mod, logger, meta):
+        _, _, _ = hdlr_mod, logger, meta
         return 5
 
     @staticmethod
     def max_retries(hdlr_mod, logger, meta):
+        _, _, _ = hdlr_mod, logger, meta
         return 10
