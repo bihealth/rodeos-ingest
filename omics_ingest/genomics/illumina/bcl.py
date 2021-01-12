@@ -26,14 +26,14 @@ from .run_folder import (
     RunInfo,
     NetcopyInfo,
 )
-from ..common import (
+from ...common import (
     cleanuping,
     pre_job as common_pre_job,
     post_job as common_post_job,
     refresh_last_update_metadata,
     run_ichksum,
 )
-from ..settings import RODEOS_DELAY_UNTIL_AT_REST_SECONDS
+from ...settings import RODEOS_DELAY_UNTIL_AT_REST_SECONDS
 
 
 #: This time should pass after the previous update and the existance of the output marker file
