@@ -1,6 +1,6 @@
 """Test the settings of ``omics_ingest``"""
 
-import pytest
+import pytest  # noqa
 
 
 def test_pass(redisdb, irods):

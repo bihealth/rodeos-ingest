@@ -11,7 +11,7 @@ test:
 
 .PHONY: pytest
 pytest:
-	pytest tests/test_*.py
+	pytest
 
 .PHONY: lint-all
 lint-all: bandit pyflakes pep257 prospector
