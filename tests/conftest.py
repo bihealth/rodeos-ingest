@@ -26,7 +26,7 @@ def make_irods_session(**kwargs):
             env_file = os.path.expanduser("~/.irods/irods_environment.json")
 
     try:
-        os.environ["IRODS_CI_TEST_RUN"]  # noqa
+        _ = os.environ["IRODS_CI_TEST_RUN"]
         uid = getpwnam("irods").pw_uid
     except KeyError:
         uid = None
