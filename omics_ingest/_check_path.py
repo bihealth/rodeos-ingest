@@ -17,17 +17,22 @@ def _executable_in_path(name: str) -> typing.Union[str, bool]:
     if not RODEOS_LOOK_FOR_EXECUTABLES:  # pragma: no cover
         return False
     else:
-        res = subprocess.run(  # nosec
-            ["which", name],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=1,
-            encoding="utf-8",
-        )  # noqa
-        if res.returncode == 0:
-            return res.stdout or True
-        else:  # pragma: no cover
+        try:
+            res = subprocess.run(  # nosec
+                ["which", name],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=1,
+                encoding="utf-8",
+                check=True,
+            )
+        except subprocess.CalledProcessError:
             return False
+        else:
+            if res.returncode == 0:
+                return res.stdout or True
+            else:  # pragma: no cover
+                return False
 
 
 def _check_executables_in_path(names: typing.List[str]) -> None:
