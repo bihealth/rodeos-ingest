@@ -1,11 +1,10 @@
-import contextlib
 import os
 from pwd import getpwnam
 import typing
 
 import attr
 from irods.access import iRODSAccess
-from irods.exception import UserDoesNotExist
+from irods.models import DataObject, Collection, User
 from irods.session import iRODSSession
 import pytest
 from pytest_redis import factories
@@ -27,7 +26,7 @@ def make_irods_session(**kwargs):
             env_file = os.path.expanduser("~/.irods/irods_environment.json")
 
     try:
-        os.environ["IRODS_CI_TEST_RUN"]
+        os.environ["IRODS_CI_TEST_RUN"]  # noqa
         uid = getpwnam("irods").pw_uid
     except KeyError:
         uid = None
@@ -52,12 +51,46 @@ class IrodsFixture:
 
     def __init__(self, **kwargs):
         self.session = make_irods_session(**kwargs)
-        # The zone name (hard-coded for now).
+        #: The zone name (hard-coded for now).
         self.zone_name = "tempZone"
-        # The users created through this sesssion.
+        #: The super user name.
+        self.rods_user_name = "rods"
+        #: The users created through this sesssion.
         self._users = []
-        # The collections created through this session.
+        #: The collections created through this session.
         self._collections = []
+        # Cleanup at startup.
+        self._cleanup()
+
+    def _cleanup(self):
+        """Cleanup data, to be executed at startup."""
+        # Remove all users except for the rods user.
+        for user_rec in self.session.query(User).all():
+            if user_rec[User.name] not in (self.rods_user_name, "public", "rodsadmin"):
+                self.session.users.get(user_rec[User.name]).remove()
+        # Remove data objects.
+        for dobj_rec in self.session.query(DataObject).order_by(DataObject.name).all():
+            coll_rec = (
+                self.session.query(Collection)
+                .filter(Collection.id == dobj_rec[DataObject.collection_id])
+                .first()
+            )
+            self.session.data_objects.unlink(
+                "%s/%s" % (coll_rec[Collection.name], dobj_rec[DataObject.name]), force=True
+            )
+        # Remove all collections except for the rods home.
+        keep_colls = tuple(
+            "/%s/%s/" % (self.zone_name, x)
+            for x in ("home/%s" % self.rods_user_name, "home/public", "trash/home")
+        )
+        for coll_rec in (
+            self.session.query(Collection).order_by(Collection.name, order="desc").all()
+        ):
+            coll_path = coll_rec[Collection.name]
+            if not coll_path.endswith("/"):
+                coll_path = "%s/" % coll_path
+            if not any(keep_coll.startswith(coll_path) for keep_coll in keep_colls):
+                self.session.collections.remove(coll_path[:-1], force=True)
 
     def create_user(self, name: str, password: str, user_type=None) -> None:
         """Create user and mark for deletion when tearing down."""
@@ -76,18 +109,9 @@ class IrodsFixture:
             acl = iRODSAccess("inherit", path, user_name=owner or "")
             self.session.permissions.set(acl, recursive=recursive)
 
-    def _tear_down(self):
-        # Remove users.
-        for user in self._users:
-            obj = self.session.users.get(user.name, self.zone_name)
-            if obj:
-                try:
-                    obj.remove()
-                except UserDoesNotExist:
-                    pass  # swallow
-        # Remove collections.
-        for coll in reversed(self._collections):
-            self.session.collections.remove(coll, force=True)
+    def tear_down(self):
+        # Cleanup users and data.
+        self._cleanup()
         # Cleanup session with connection pool.
         self.session.cleanup()
 
@@ -96,4 +120,4 @@ class IrodsFixture:
 def irods():
     fixture = IrodsFixture()
     yield fixture
-    fixture._tear_down()
+    fixture.tear_down()

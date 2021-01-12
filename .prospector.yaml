@@ -1,5 +1,5 @@
 ignore-paths:
-  - clearCNV/_version.py
+  - omics_ingest/_version.py
   - versioneer.py
 
 pep257:
