@@ -1,6 +1,6 @@
-"""Test the settings of ``omics_ingest``"""
+"""Test the settings of ``rodeos_ingest``"""
 
-from omics_ingest import settings
+from rodeos_ingest import settings
 
 
 def test_adjusted_settings():

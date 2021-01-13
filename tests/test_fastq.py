@@ -1,4 +1,4 @@
-"""Tests for the functionality of ``omics_ingest.genomics.illumina.fastq``.
+"""Tests for the functionality of ``rodeos_ingest.genomics.illumina.fastq``.
 
 See docstring of ``.bcl`` on collection of coverage information.
 """
@@ -11,8 +11,8 @@ from unittest.mock import Mock
 
 from irods.models import Collection
 from irods_capability_automated_ingest.utils import Operation
-from omics_ingest.genomics.illumina import fastq
-from omics_ingest import common
+from rodeos_ingest.genomics.illumina import fastq
+from rodeos_ingest import common
 
 from .conftest import (
     clear_redis,
@@ -37,7 +37,7 @@ def prepare_fastq_folder(folder_name, tmp_path):
 def test_system_ingest_fastq(
     tmp_path, irods,
 ):
-    """System test for ``omics_ingest.genomics.illumina.fastq``."""
+    """System test for ``rodeos_ingest.genomics.illumina.fastq``."""
     # Setup iRODS
     dest_coll = "/tempZone/target"
     irods.create_collection(dest_coll, "rods")
@@ -67,7 +67,7 @@ def test_system_ingest_fastq(
                 "--exclude_file_name",
                 ".*_MANIFEST_*.txt",
                 "--event_handler",
-                "omics_ingest.genomics.illumina.fastq",
+                "rodeos_ingest.genomics.illumina.fastq",
                 "--job_name",
                 job_name,
                 "--log_level",
@@ -124,7 +124,7 @@ def check_fastq_result(dest_coll, irods, input_path, folder_name):
 def test_integration_ingest_fastq(
     tmp_path, irods, mocker,
 ):
-    """Integration test for ``omics_ingest.genomics.illumina.ingest_bcl``."""
+    """Integration test for ``rodeos_ingest.genomics.illumina.ingest_bcl``."""
     mocker.patch.object(fastq, "DELAY_UNTIL_AT_REST", datetime.timedelta(seconds=30))
     mocker.patch.object(common, "HASHDEEP_ALGO", "sha256")
 

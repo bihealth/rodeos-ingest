@@ -1,5 +1,5 @@
 ignore-paths:
-  - omics_ingest/_version.py
+  - rodeos_ingest/_version.py
   - versioneer.py
 
 pep257:

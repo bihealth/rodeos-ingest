@@ -1,11 +1,11 @@
-"""Tests for code in ``omics_ingest.common`` that does not need irods."""
+"""Tests for code in ``rodeos_ingest.common`` that does not need irods."""
 
 import pathlib
 from unittest.mock import MagicMock
 
 import pytest
 
-from omics_ingest.common import cleanuping, to_ingested_path, _compare_manifests
+from rodeos_ingest.common import cleanuping, to_ingested_path, _compare_manifests
 
 
 def test_cleanuping():

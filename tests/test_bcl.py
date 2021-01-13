@@ -1,4 +1,4 @@
-"""Tests for the functionality of ``omics_ingest.genomics.illumina.bcl``.
+"""Tests for the functionality of ``rodeos_ingest.genomics.illumina.bcl``.
 
 Note that no coverage information is generated from celery jobs right now:
 
@@ -19,8 +19,8 @@ from unittest.mock import Mock
 
 from irods.models import Collection
 from irods_capability_automated_ingest.utils import Operation
-from omics_ingest.genomics.illumina import bcl
-from omics_ingest import common
+from rodeos_ingest.genomics.illumina import bcl
+from rodeos_ingest import common
 
 from .conftest import (
     clear_redis,
@@ -46,7 +46,7 @@ def prepare_run_folder(run_folder, tmp_path):
 def test_system_ingest_bcl(
     tmp_path, irods,
 ):
-    """System test for ``omics_ingest.genomics.illumina.bcl``."""
+    """System test for ``rodeos_ingest.genomics.illumina.bcl``."""
     # Setup iRODS
     dest_coll = "/tempZone/target"
     irods.create_collection(dest_coll, "rods")
@@ -76,7 +76,7 @@ def test_system_ingest_bcl(
                 "--exclude_file_name",
                 ".*_MANIFEST_*.txt",
                 "--event_handler",
-                "omics_ingest.genomics.illumina.bcl",
+                "rodeos_ingest.genomics.illumina.bcl",
                 "--job_name",
                 job_name,
                 "--log_level",
@@ -143,7 +143,7 @@ def check_bcl_result(dest_coll, irods, input_path, run_folder):
 def test_integration_ingest_bcl(
     tmp_path, irods, mocker,
 ):
-    """Integration test for ``omics_ingest.genomics.illumina.ingest_bcl``."""
+    """Integration test for ``rodeos_ingest.genomics.illumina.ingest_bcl``."""
     mocker.patch.object(bcl, "DELAY_UNTIL_AT_REST", datetime.timedelta(seconds=30))
     mocker.patch.object(common, "HASHDEEP_ALGO", "sha256")
 

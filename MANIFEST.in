@@ -9,6 +9,6 @@ recursive-exclude * *.py[co]
 recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
 
 include versioneer.py
-include omics_ingest/_version.py
+include rodeos_ingest/_version.py
 
 include requirements.txt requirements/*.txt
