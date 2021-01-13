@@ -1,18 +1,41 @@
+import contextlib
 import os
 from pwd import getpwnam
+import subprocess
+import time
 import typing
 
 import attr
+from celery import Celery
 from irods.access import iRODSAccess
 from irods.models import DataObject, Collection, User
 from irods.session import iRODSSession
+from redis import StrictRedis, ConnectionPool
+from irods_capability_automated_ingest.sync_task import done
+
 import pytest
-from pytest_redis import factories
 
 
-#: Define ``redisdb`` fixture to connect to an already running redis server
-#: such as on CI.
-redisdb = factories.redisdb("redis_nooproc")
+@pytest.fixture(scope="session")
+def celery_config():
+    return {"broker_url": "memory://", "result_backend": "redis://"}
+
+
+#: Path to configuration file for ingest user.
+IRODS_ENV_INGEST = os.path.realpath(".github/workflows/ci/irods_environment-ingest.json")
+
+#: Module to sync tool.
+IRODS_SYNC_PY = "irods_capability_automated_ingest.irods_sync"
+
+
+@contextlib.contextmanager
+def updated_env(**kwargs):
+    prev = os.environ.copy()
+    for k, v in kwargs.items():
+        os.environ[k] = str(v)
+    yield
+    os.environ.clear()
+    os.environ.update(prev)
 
 
 def make_irods_session(**kwargs):
@@ -106,8 +129,10 @@ class IrodsFixture:
         self._collections.append(path)
         self.session.collections.create(path)
         if owner:
-            acl = iRODSAccess("inherit", path, user_name=owner or "")
-            self.session.permissions.set(acl, recursive=recursive)
+            own_acl = iRODSAccess("own", path, user_name=owner or "")
+            self.session.permissions.set(own_acl, recursive=recursive)
+        inherit_acl = iRODSAccess("inherit", path, user_name=owner or "")
+        self.session.permissions.set(inherit_acl, recursive=recursive)
 
     def tear_down(self):
         # Cleanup users and data.
@@ -118,6 +143,94 @@ class IrodsFixture:
 
 @pytest.fixture()
 def irods():
+    """Initialize a new ``IrodsFixture``."""
     fixture = IrodsFixture()
     yield fixture
     fixture.tear_down()
+
+
+def start_celery_worker(n, args=None, write_logs=False):
+    """Start celery worker with ``n`` threads and additional ``args``."""
+    if write_logs:
+        log_args = ["-f", "worker.log"]
+    else:
+        log_args = []
+    worker = subprocess.Popen(
+        [
+            "celery",
+            "-A",
+            "irods_capability_automated_ingest.sync_task",
+            "worker",
+            "-c",
+            str(n),
+            "-l",
+            "INFO",
+            "-Q",
+            "restart,path,file",
+        ]
+        + log_args
+        + (args or [])
+    )
+    return worker
+
+
+def wait_for_celery_worker(worker, job_name="job-name", timeout=60):
+    """Wait for the celery process (``Popen`` in ``worker``) to finish all tasks
+    for job ``job_name`` using a timeout of ``timeout`` (``None`` implies no timeout).
+    """
+    # Wait for all jobs to be complete.
+    r = get_redis()
+    t0 = time.time()
+    while timeout is None or time.time() - t0 < timeout:
+        restart = r.llen("restart")
+        i = app.control.inspect()
+        act = i.active()
+        if act is None:
+            active = 0
+        else:
+            active = sum(map(len, act.values()))
+        d = done(r, job_name)
+        if restart != 0 or active != 0 or not d:
+            time.sleep(1)
+        else:
+            break
+
+    # Try really hard for half a second to kill celery.
+    t_end = time.time() + 0.5
+    while timeout is None or time.time() < t_end:
+        worker.terminate()
+    worker.wait()
+
+
+app = Celery("icai")
+
+
+redis_connection_pool_map = {}
+
+
+def sync_utils_get_redis(config):
+    redis_config = config["redis"]
+    host = redis_config["host"]
+    port = redis_config["port"]
+    db = redis_config["db"]
+    url = "redis://" + host + ":" + str(port) + "/" + str(db)
+    pool = redis_connection_pool_map.get(url)
+    if pool is None:
+        pool = ConnectionPool(host=host, port=port, db=db)
+        redis_connection_pool_map[url] = pool
+
+    return StrictRedis(connection_pool=pool)
+
+
+def get_redis(host="redis", port=6379, db=0):
+    redis_config = {}
+    redis_config["host"] = host
+    redis_config["port"] = port
+    redis_config["db"] = db
+    config = {}
+    config["redis"] = redis_config
+    return sync_utils_get_redis(config)
+
+
+def clear_redis():
+    get_redis().flushdb()

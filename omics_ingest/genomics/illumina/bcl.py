@@ -92,7 +92,7 @@ def is_runfolder_done(path: typing.Union[str, pathlib.Path]) -> bool:
                 parse_runparameters_xml(path / name), path / name
             )
             return all((path / marker).exists() for marker in markers)
-    return False
+    return False  # pragma: no cover
 
 
 class event_handler(Core):
@@ -106,6 +106,7 @@ class event_handler(Core):
     def post_job(hdlr_mod, logger, meta):
         """Move completed and at rest run folders into the "ingested" area."""
         _, _, _ = hdlr_mod, logger, meta
+        common_post_job(hdlr_mod, logger, meta, is_runfolder_done, DELAY_UNTIL_AT_REST)
 
     @staticmethod
     def operation(session, meta, **options):

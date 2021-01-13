@@ -6,8 +6,7 @@
 
 # omics-irods-ingest
 
-
-Code for ingesting omics data into omics storage based on iRODS capabilities
+Code for ingesting omics data into iRODS based on [iRODS capability automated ingest](https://github.com/irods/irods_capability_automated_ingest).
 
 ## iRODS Ingest Event Handler Modules
 
@@ -31,12 +30,12 @@ Code for ingesting omics data into omics storage based on iRODS capabilities
 - setup `.irods/irods_environment.json` file, e.g.
     ```json
     {
-    "irods_host": "irods",
-    "irods_port": 1247,
-    "irods_authentication_scheme": "NATIVE",
-    "irods_default_hash_scheme": "MD5",
-    "irods_zone_name": "tempZone",
-    "irods_user_name": "rods",
-    "irods_password": "rods"
+        "irods_host": "irods",
+        "irods_port": 1247,
+        "irods_authentication_scheme": "NATIVE",
+        "irods_default_hash_scheme": "MD5",
+        "irods_zone_name": "tempZone",
+        "irods_user_name": "rods",
+        "irods_password": "rods"
     }
     ```

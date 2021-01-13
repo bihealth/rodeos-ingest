@@ -11,18 +11,18 @@ test:
 
 .PHONY: pytest
 pytest:
-	pytest
+	pytest tests
 
 .PHONY: lint-all
 lint-all: bandit pyflakes pep257 prospector
 
 .PHONY: bandit
 bandit:
-	bandit -c bandit.yml -r clearCNV
+	bandit -c bandit.yml -r omics_ingest
 
 .PHONY: pyflakes
 pyflakes:
-	pyflakes clearCNV tests
+	pyflakes omics_ingest tests
 
 .PHONY: pep257
 pep257:
@@ -30,4 +30,4 @@ pep257:
 
 .PHONY: prospector
 prospector:
-	prospector
+	prospector -i src

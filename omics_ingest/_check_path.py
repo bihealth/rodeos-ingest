@@ -26,7 +26,7 @@ def _executable_in_path(name: str) -> typing.Union[str, bool]:
                 encoding="utf-8",
                 check=True,
             )
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError:  # pragma: no cover
             return False
         else:
             if res.returncode == 0:

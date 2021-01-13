@@ -9,9 +9,9 @@ jobs:
     strategy:
       matrix:
         python-version:
-          # - "3.6"
+          - "3.6"
           # - "3.7"
-          - "3.8"
+          # - "3.8"
 
     services:
       irods:
@@ -94,7 +94,11 @@ jobs:
         run: pip install -e .
       # Run tests -----------------------------------------------------------
       - name: run tests
-        run: pytest
+        run: pytest tests
+      - name: combine coverage files
+        run: coverage combine .coverage_*
+      - name: create XML coverage
+        run: coverage xml
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@master
         with:

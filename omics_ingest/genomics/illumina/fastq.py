@@ -44,6 +44,7 @@ class event_handler(Core):
     def post_job(hdlr_mod, logger, meta):
         """Move completed and at rest run folders into the "ingested" area."""
         _, _, _ = hdlr_mod, logger, meta
+        common_post_job(hdlr_mod, logger, meta, is_demuxfolder_done, DELAY_UNTIL_AT_REST)
 
     @staticmethod
     def operation(session, meta, **options):
@@ -64,8 +65,8 @@ class event_handler(Core):
         run_ichksum(meta["target"])
 
     @staticmethod
-    def delay(hdlr_mod, logger, meta):
-        _, _, _ = hdlr_mod, logger, meta
+    def delay(hdlr_mod, logger, meta, retries):
+        _, _, _, _ = hdlr_mod, logger, meta, retries
         return 5
 
     @staticmethod
