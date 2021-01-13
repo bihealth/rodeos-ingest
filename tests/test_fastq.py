@@ -104,10 +104,11 @@ def check_fastq_result(dest_coll, irods, input_path, folder_name):
     with closing(irods.session.data_objects.open(mf_path, "r")) as inputf:
         manifest_local = inputf.read().decode("utf-8")
     lines = list(sorted(manifest_local.splitlines()))
+    lines[1] = lines[1].replace("$", "#")
     lines[2] = "## Invoked from: "
     assert lines == [
         "## ",
-        "## $ hashdeep -c sha256 -f /dev/stdin -j 8",
+        "## # hashdeep -c sha256 -f /dev/stdin -j 8",
         "## Invoked from: ",
         "%%%% HASHDEEP-1.0",
         "%%%% size,sha256,filename",
