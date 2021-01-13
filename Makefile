@@ -18,11 +18,11 @@ lint-all: bandit pyflakes pep257 prospector
 
 .PHONY: bandit
 bandit:
-	bandit -c bandit.yml -r omics_ingest
+	bandit -c bandit.yml -r rodeos_ingest
 
 .PHONY: pyflakes
 pyflakes:
-	pyflakes omics_ingest tests
+	pyflakes rodeos_ingest tests
 
 .PHONY: pep257
 pep257:

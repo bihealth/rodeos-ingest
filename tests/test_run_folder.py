@@ -1,6 +1,6 @@
-"""Tests for the ``omics_ingest.genomics.run_folder`` module."""
+"""Tests for the ``rodeos_ingest.genomics.run_folder`` module."""
 
-from omics_ingest.genomics.illumina.run_folder import (
+from rodeos_ingest.genomics.illumina.run_folder import (
     NetcopyInfo,
     parse_netcopy_complete_txt,
     runparameters_to_marker_file,

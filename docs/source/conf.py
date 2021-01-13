@@ -25,10 +25,10 @@ import os
 
 os.environ["RODEOS_LOOK_FOR_EXECUTABLES"] = "0"
 
-import omics_ingest
+import rodeos_ingest
 
 # The full version, including alpha/beta/rc tags
-release = omics_ingest.__version__
+release = rodeos_ingest.__version__
 
 
 # -- General configuration ---------------------------------------------------
