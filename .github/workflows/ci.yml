@@ -68,8 +68,12 @@ jobs:
           command: |
             set -eo pipefail
             apt-get update -q 2>&1 | ( ! grep -q -e '^Err:' -e '^E:' -e 'W:' )
-      - name: install irods-icommands
-        run: apt install -y irods-icommands
+      - name: retry until `apt install -y irods-icommands` succeeds
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: apt install -y irods-icommands
       # iRODS: auth as user rods --------------------------------------------
       - name: create ~/.irods
         run: mkdir -p ~/.irods
@@ -95,10 +99,6 @@ jobs:
       # Run tests -----------------------------------------------------------
       - name: run tests
         run: pytest tests
-      - name: combine coverage files
-        run: coverage combine .coverage_*
-      - name: create XML coverage
-        run: coverage xml
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@master
         with:
