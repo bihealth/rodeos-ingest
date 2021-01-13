@@ -21,6 +21,10 @@ project = "CODA"
 copyright = "2020, Manuel Holtgrewe, Dieter Beule"
 author = "Manuel Holtgrewe, Dieter Beule"
 
+import os
+
+os.environ["RODEOS_LOOK_FOR_EXECUTABLES"] = "0"
+
 import omics_ingest
 
 # The full version, including alpha/beta/rc tags
