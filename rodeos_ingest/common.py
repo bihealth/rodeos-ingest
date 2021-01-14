@@ -17,15 +17,15 @@ from irods.meta import iRODSMeta
 from .settings import RODEOS_HASHDEEP_ALGO, RODEOS_HASHDEEP_THREADS
 
 #: AVU key to use for ``last_update`` attribute.
-KEY_LAST_UPDATE = "omics::ingest::last_update"
+KEY_LAST_UPDATE = "rodeos::ingest::last_update"
 #: AVU key to use destionation run folder ingestion status.
-KEY_STATUS = "omics::ingest::status"
+KEY_STATUS = "rodeos::ingest::status"
 #: AVU key to use for ``first_seen`` attribute.
-KEY_FIRST_SEEN = "omics::ingest::first_seen"
+KEY_FIRST_SEEN = "rodeos::ingest::first_seen"
 #: AVU key for manifest status
-KEY_MANIFEST_STATUS = "omics::ingest::manifest_status"
+KEY_MANIFEST_STATUS = "rodeos::ingest::manifest_status"
 #: AVU key with manifest detailed message
-KEY_MANIFEST_MESSAGE = "omics::ingest::manifest_message"
+KEY_MANIFEST_MESSAGE = "rodeos::ingest::manifest_message"
 
 #: Number of threads to run hashdeep with.
 HASHDEEP_THREADS = RODEOS_HASHDEEP_THREADS

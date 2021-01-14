@@ -3,9 +3,9 @@
 - Use ``Operation.PUT_SYNC`` to update changed files in addition to uploading new ones.
 - Handle initial upload and update of ``RunInfo.xml`` and ``runParameters.xml`` and update
   collection AVU.
-- When a run folder is first seen write current timestamp to ``omics::ingest::first_seen``
-- Every time a is changed then write current timestamp to ``omics::ingest::last_update``
-- If the marker file for being done has been written out and ``omics::ingest::last_update``
+- When a run folder is first seen write current timestamp to ``rodeos::ingest::first_seen``
+- Every time a is changed then write current timestamp to ``rodeos::ingest::last_update``
+- If the marker file for being done has been written out and ``rodeos::ingest::last_update``
   is longer than ``DELAY_UNTIL_AT_REST`` (e.g., 15 minutes) in the past then move away the
   run folder into the ingested part of the landing zone.
 """

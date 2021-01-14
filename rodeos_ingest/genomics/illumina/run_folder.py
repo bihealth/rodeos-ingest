@@ -7,7 +7,7 @@ import defusedxml.ElementTree as ET  # noqa
 import attr
 
 #: The AVU key prefix to use for run info values.
-RUN_INFO_AVU_KEY_PREFIX = "omics::ingest::run_info"
+RUN_INFO_AVU_KEY_PREFIX = "rodeos::ingest::run_info"
 
 
 class UnknownInstrumentType(Exception):
@@ -49,7 +49,7 @@ def parse_runinfo_xml(path: str) -> RunInfo:
 
 
 #: The AVU key prefix to use for run parameters values.
-RUN_PARAMETERS_AVU_KEY_PREFIX = "omics::ingest::run_parameters"
+RUN_PARAMETERS_AVU_KEY_PREFIX = "rodeos::ingest::run_parameters"
 
 #: Mapping of XPaths info ``runParameter.xml`` to iRODS AVU names.
 RUN_PARAMETERS_XPATH_MAP = {
@@ -95,7 +95,7 @@ def parse_runparameters_xml(path):
 
 
 #: Prefix for AVU for netcopy.
-NETCOPY_AVU_KEY_PREFIX = "omics::ingest::netcopy_complete"
+NETCOPY_AVU_KEY_PREFIX = "rodeos::ingest::netcopy_complete"
 
 
 @attr.s(auto_attribs=True, frozen=True)

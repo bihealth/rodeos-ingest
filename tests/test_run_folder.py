@@ -14,11 +14,11 @@ from rodeos_ingest.genomics.illumina.run_folder import (
 def test_run_info():
     run_info = RunInfo("flowcell", "instrument", "run_number", "run_id", "date")
     assert list(run_info.to_avus()) == [
-        ("omics::ingest::run_info::flowcell", "flowcell", ""),
-        ("omics::ingest::run_info::instrument", "instrument", ""),
-        ("omics::ingest::run_info::run_number", "run_number", ""),
-        ("omics::ingest::run_info::run_id", "run_id", ""),
-        ("omics::ingest::run_info::date", "date", ""),
+        ("rodeos::ingest::run_info::flowcell", "flowcell", ""),
+        ("rodeos::ingest::run_info::instrument", "instrument", ""),
+        ("rodeos::ingest::run_info::run_number", "run_number", ""),
+        ("rodeos::ingest::run_info::run_id", "run_id", ""),
+        ("rodeos::ingest::run_info::date", "date", ""),
     ]
 
 
@@ -97,9 +97,9 @@ def test_parse_run_parameters_st_k00106():
 def test_netcopy_info():
     ni = NetcopyInfo("6/3/2020", "17:29:14.954", "Illumina RTA 1.18.54")
     assert list(ni.to_avus()) == [
-        ("omics::ingest::netcopy_complete::date", "6/3/2020", ""),
-        ("omics::ingest::netcopy_complete::time", "17:29:14.954", ""),
-        ("omics::ingest::netcopy_complete::rta_version", "Illumina RTA 1.18.54", ""),
+        ("rodeos::ingest::netcopy_complete::date", "6/3/2020", ""),
+        ("rodeos::ingest::netcopy_complete::time", "17:29:14.954", ""),
+        ("rodeos::ingest::netcopy_complete::rta_version", "Illumina RTA 1.18.54", ""),
     ]
 
 
@@ -108,9 +108,9 @@ def test_parse_netcopy_complete_txt():
         "tests/data/run_folder/Basecalling_Netcopy_complete_Read1-M06205.txt"
     )
     assert list(ni.to_avus()) == [
-        ("omics::ingest::netcopy_complete::date", "6/3/2020", ""),
-        ("omics::ingest::netcopy_complete::time", "17:29:14.954", ""),
-        ("omics::ingest::netcopy_complete::rta_version", "Illumina RTA 1.18.54", ""),
+        ("rodeos::ingest::netcopy_complete::date", "6/3/2020", ""),
+        ("rodeos::ingest::netcopy_complete::time", "17:29:14.954", ""),
+        ("rodeos::ingest::netcopy_complete::rta_version", "Illumina RTA 1.18.54", ""),
     ]
 
 

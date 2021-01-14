@@ -99,8 +99,8 @@ def check_bcl_result(dest_coll, irods, input_path, run_folder):
     # Must be marked as "complete".
     run_coll = "%s/%s" % (dest_coll, run_folder)
     coll_meta = {m.name: m for m in irods.session.metadata.get(Collection, run_coll)}
-    assert "omics::ingest::status" in coll_meta
-    assert coll_meta["omics::ingest::status"].value == "complete"
+    assert "rodeos::ingest::status" in coll_meta
+    assert coll_meta["rodeos::ingest::status"].value == "complete"
     # Check that the manifest files are present and have the correct content.
     mf_path = "%s/%s" % (run_coll, common.MANIFEST_IRODS)
     with closing(irods.session.data_objects.open(mf_path, "r")) as inputf:
