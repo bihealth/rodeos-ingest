@@ -12,6 +12,7 @@ has to be adjusted accordingly.
 """
 from contextlib import closing
 import datetime
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -19,6 +20,7 @@ from unittest.mock import Mock
 
 from irods.models import Collection
 from irods_capability_automated_ingest.utils import Operation
+import pytest
 from rodeos_ingest.genomics.illumina import bcl
 from rodeos_ingest import common
 
@@ -43,10 +45,12 @@ def prepare_run_folder(run_folder, tmp_path):
     return input_path
 
 
-def test_system_ingest_bcl(
-    tmp_path, irods,
-):
+@pytest.mark.parametrize("configure_move", [True, False])
+def test_system_ingest_bcl(tmp_path, irods, mocker, configure_move):
     """System test for ``rodeos_ingest.genomics.illumina.bcl``."""
+    mocker.patch.object(common, "MOVE_AFTER_INGEST", configure_move)
+    mocker.patch.dict(os.environ, {"RODEOS_MOVE_AFTER_INGEST": "1" if configure_move else "0"})
+
     # Setup iRODS
     dest_coll = "/tempZone/target"
     irods.create_collection(dest_coll, "rods")
@@ -91,10 +95,10 @@ def test_system_ingest_bcl(
         )
         wait_for_celery_worker(worker, job_name)
 
-    check_bcl_result(dest_coll, irods, input_path, run_folder)
+    check_bcl_result(dest_coll, irods, input_path, run_folder, configure_move)
 
 
-def check_bcl_result(dest_coll, irods, input_path, run_folder):
+def check_bcl_result(dest_coll, irods, input_path, run_folder, expect_moved: bool = True):
     """Helper function that checks after the transfer."""
     # Must be marked as "complete".
     run_coll = "%s/%s" % (dest_coll, run_folder)
@@ -136,15 +140,19 @@ def check_bcl_result(dest_coll, irods, input_path, run_folder):
     ]
 
     # Must have been moved locally.
-    assert not (input_path / run_folder).exists()
-    assert (Path(str(input_path) + "-INGESTED") / run_folder).exists()
+    if expect_moved:
+        assert not (input_path / run_folder).exists()
+        assert (Path(str(input_path) + "-INGESTED") / run_folder).exists()
+    else:
+        assert (input_path / run_folder).exists()
+        assert not (Path(str(input_path) + "-INGESTED") / run_folder).exists()
 
 
-def test_integration_ingest_bcl(
-    tmp_path, irods, mocker,
-):
+@pytest.mark.parametrize("configure_move", [True, False])
+def test_integration_ingest_bcl(tmp_path, irods, mocker, configure_move):
     """Integration test for ``rodeos_ingest.genomics.illumina.ingest_bcl``."""
     mocker.patch.object(bcl, "DELAY_UNTIL_AT_REST", datetime.timedelta(seconds=30))
+    mocker.patch.object(common, "MOVE_AFTER_INGEST", configure_move)
     mocker.patch.object(common, "HASHDEEP_ALGO", "sha256")
 
     # Setup iRODS
@@ -184,7 +192,7 @@ def test_integration_ingest_bcl(
     mocker.patch.object(bcl, "DELAY_UNTIL_AT_REST", datetime.timedelta(seconds=0))
     bcl.event_handler.post_job(hdlr_mod, logger, {**meta_base, "target": str(dest_coll)})
 
-    check_bcl_result(dest_coll, irods, input_path, run_folder)
+    check_bcl_result(dest_coll, irods, input_path, run_folder, configure_move)
 
 
 def test_module():

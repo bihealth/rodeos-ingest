@@ -14,7 +14,13 @@ import dateutil.parser
 from irods_capability_automated_ingest.sync_irods import irods_session
 from irods.meta import iRODSMeta
 
-from .settings import RODEOS_HASHDEEP_ALGO, RODEOS_HASHDEEP_THREADS
+from .settings import (
+    RODEOS_HASHDEEP_ALGO as HASHDEEP_ALGO,
+    RODEOS_HASHDEEP_THREADS as HASHDEEP_THREADS,
+    RODEOS_MANIFEST_LOCAL as MANIFEST_LOCAL,
+    RODEOS_MANIFEST_IRODS as MANIFEST_IRODS,
+    RODEOS_MOVE_AFTER_INGEST as _MOVE_AFTER_INGEST,
+)
 
 #: AVU key to use for ``last_update`` attribute.
 KEY_LAST_UPDATE = "rodeos::ingest::last_update"
@@ -27,15 +33,7 @@ KEY_MANIFEST_STATUS = "rodeos::ingest::manifest_status"
 #: AVU key with manifest detailed message
 KEY_MANIFEST_MESSAGE = "rodeos::ingest::manifest_message"
 
-#: Number of threads to run hashdeep with.
-HASHDEEP_THREADS = RODEOS_HASHDEEP_THREADS
-#: Algorithm to use for hashing.
-HASHDEEP_ALGO = RODEOS_HASHDEEP_ALGO
-
-#: File name for local manifest file.
-MANIFEST_LOCAL = "_MANIFEST_LOCAL.txt"
-#: File name for iRODS manifest file.
-MANIFEST_IRODS = "_MANIFEST_IRODS.txt"
+MOVE_AFTER_INGEST = _MOVE_AFTER_INGEST
 
 
 @contextmanager
@@ -169,13 +167,16 @@ def _post_job_run_folder_done(
         session.data_objects.put(irods_path, irods_manifest_dest)
         run_ichksum(irods_manifest_dest)
         # Move folder.
-        new_src_folder = to_ingested_path(src_folder)
-        logger.info("attempting move %s => %s" % (src_folder, new_src_folder))
-        try:
-            new_src_folder.parent.mkdir(exist_ok=True)
-            src_folder.rename(new_src_folder)
-        except OSError as e:  # pragma: no cover
-            logger.error("could not move to ingested: %s" % e)
+        if MOVE_AFTER_INGEST:
+            new_src_folder = to_ingested_path(src_folder)
+            logger.info("attempting move %s => %s" % (src_folder, new_src_folder))
+            try:
+                new_src_folder.parent.mkdir(exist_ok=True)
+                src_folder.rename(new_src_folder)
+            except OSError as e:  # pragma: no cover
+                logger.error("could not move to ingested: %s" % e)
+        else:
+            logger.info("configured to not move %s" % src_folder)
         # Update ``status`` meta data.
         dst_collection.metadata[KEY_STATUS] = iRODSMeta(KEY_STATUS, "complete", "")
     else:

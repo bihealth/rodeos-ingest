@@ -3,6 +3,7 @@
 See docstring of ``.bcl`` on collection of coverage information.
 """
 from contextlib import closing
+import os
 import datetime
 import shutil
 import subprocess
@@ -11,6 +12,7 @@ from unittest.mock import Mock
 
 from irods.models import Collection
 from irods_capability_automated_ingest.utils import Operation
+import pytest
 from rodeos_ingest.genomics.illumina import fastq
 from rodeos_ingest import common
 
@@ -34,10 +36,12 @@ def prepare_fastq_folder(folder_name, tmp_path):
     return input_path
 
 
-def test_system_ingest_fastq(
-    tmp_path, irods,
-):
+@pytest.mark.parametrize("configure_move", [True, False])
+def test_system_ingest_fastq(tmp_path, irods, mocker, configure_move):
     """System test for ``rodeos_ingest.genomics.illumina.fastq``."""
+    mocker.patch.object(common, "MOVE_AFTER_INGEST", configure_move)
+    mocker.patch.dict(os.environ, {"RODEOS_MOVE_AFTER_INGEST": "1" if configure_move else "0"})
+
     # Setup iRODS
     dest_coll = "/tempZone/target"
     irods.create_collection(dest_coll, "rods")
@@ -82,10 +86,10 @@ def test_system_ingest_fastq(
         )
         wait_for_celery_worker(worker, job_name)
 
-    check_fastq_result(dest_coll, irods, input_path, folder_name)
+    check_fastq_result(dest_coll, irods, input_path, folder_name, configure_move)
 
 
-def check_fastq_result(dest_coll, irods, input_path, folder_name):
+def check_fastq_result(dest_coll, irods, input_path, folder_name, configure_move):
     """Helper function that checks after the transfer."""
     # Must be marked as "complete".
     run_coll = "%s/%s" % (dest_coll, folder_name)
@@ -117,15 +121,19 @@ def check_fastq_result(dest_coll, irods, input_path, folder_name):
     ]
 
     # Must have been moved locally.
-    assert not (input_path / folder_name).exists()
-    assert (Path(str(input_path) + "-INGESTED") / folder_name).exists()
+    if configure_move:
+        assert not (input_path / folder_name).exists()
+        assert (Path(str(input_path) + "-INGESTED") / folder_name).exists()
+    else:
+        assert (input_path / folder_name).exists()
+        assert not (Path(str(input_path) + "-INGESTED") / folder_name).exists()
 
 
-def test_integration_ingest_fastq(
-    tmp_path, irods, mocker,
-):
+@pytest.mark.parametrize("configure_move", [True, False])
+def test_integration_ingest_fastq(tmp_path, irods, mocker, configure_move):
     """Integration test for ``rodeos_ingest.genomics.illumina.ingest_bcl``."""
     mocker.patch.object(fastq, "DELAY_UNTIL_AT_REST", datetime.timedelta(seconds=30))
+    mocker.patch.object(common, "MOVE_AFTER_INGEST", configure_move)
     mocker.patch.object(common, "HASHDEEP_ALGO", "sha256")
 
     # Setup iRODS
@@ -165,7 +173,7 @@ def test_integration_ingest_fastq(
     mocker.patch.object(fastq, "DELAY_UNTIL_AT_REST", datetime.timedelta(seconds=0))
     fastq.event_handler.post_job(hdlr_mod, logger, {**meta_base, "target": str(dest_coll)})
 
-    check_fastq_result(dest_coll, irods, input_path, folder_name)
+    check_fastq_result(dest_coll, irods, input_path, folder_name, configure_move)
 
 
 def test_module():

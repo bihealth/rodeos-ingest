@@ -6,7 +6,7 @@
 
 # RODEOS Ingest
 
-Code for ingesting omics data into iRODS based on [iRODS capability automated ingest](https://github.com/irods/irods_capability_automated_ingest).
+Code for ingesting omics data into iRODS based on [iRODS capability automated ingest](https://github.com/irods/irods_capability_automated_ingest) (ICAI).
 
 ## iRODS Ingest Event Handler Modules
 
@@ -39,3 +39,17 @@ Code for ingesting omics data into iRODS based on [iRODS capability automated in
         "irods_password": "rods"
     }
     ```
+
+## Caveat Lector
+
+### Redis best Practice
+
+RODEOS ingest is based on ICAI.
+The latter relies on Celery and redis for work queue and caching.
+The default settings of redis in many systems is to have no limit on its memory which can lead to out of memory situations when ingesting many files.
+Make sure to adjust the following settings in `redis.conf`, below are sensible defaults.
+
+```
+maxmemory 1073741824            # 1GB, can be adjusted
+maxmemory-policy allkeys-lru    # enable cache evication based on LRU
+```

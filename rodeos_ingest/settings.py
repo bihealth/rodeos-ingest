@@ -19,3 +19,11 @@ RODEOS_HASHDEEP_ALGO = os.environ.get("RODEOS_HASHDEEP_ALGO", "md5")
 RODEOS_LOOK_FOR_EXECUTABLES = (
     os.environ.get("RODEOS_LOOK_FOR_EXECUTABLES", "true").lower() in _TRUTHY
 )
+
+#: Whether or not to move directories in ingest after completing item.
+RODEOS_MOVE_AFTER_INGEST = os.environ.get("RODEOS_MOVE_AFTER_INGEST", "true").lower() in _TRUTHY
+
+#: File name for local manifest file.
+RODEOS_MANIFEST_LOCAL = os.environ.get("RODEOS_MANIFEST_LOCAL", "_MANIFEST_LOCAL.txt")
+#: File name for iRODS manifest file.
+RODEOS_MANIFEST_IRODS = os.environ.get("RODEOS_MANIFEST_IRODS", "_MANIFEST_IRODS.txt")
