@@ -17,8 +17,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "CODA"
-copyright = "2020, Manuel Holtgrewe, Dieter Beule"
+project = "RODEOS Ingest"
+copyright = "2021, Manuel Holtgrewe, Dieter Beule"
 author = "Manuel Holtgrewe, Dieter Beule"
 
 import os
