@@ -138,6 +138,7 @@ def _post_job_run_folder_done(
             "age of last update of %s is %s (<%s) -- will finalize (manifest+move)"
             % (dst_collection.path, last_update_age, delay_until_at_rest)
         )
+        run_ichksum(dst_collection.path, recurse=True)
         local_path = compute_local_manifest(logger, src_folder)
         irods_path = compute_irods_manifest(dst_collection, logger, src_folder)
         # Compare the manifest files.
@@ -340,6 +341,9 @@ def refresh_last_update_metadata(logger, session, meta):
         coll.metadata[KEY_STATUS] = iRODSMeta(KEY_STATUS, "running", "")
 
 
-def run_ichksum(irods_path: str) -> None:
+def run_ichksum(irods_path: str, recurse: bool = False) -> None:
     """Run ``ichksum $irods_path``."""
-    subprocess.run(["ichksum", irods_path], check=True)
+    args = ["ichksum", irods_path]
+    if recurse:
+        args.insert(1, "-r")
+    subprocess.run(args, check=True)

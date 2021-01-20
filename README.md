@@ -7,49 +7,11 @@
 # RODEOS Ingest
 
 Code for ingesting omics data into iRODS based on [iRODS capability automated ingest](https://github.com/irods/irods_capability_automated_ingest) (ICAI).
+This package provides the following modules and support the following data types.
 
-## iRODS Ingest Event Handler Modules
+| module | data type |
+| -----  | --------  |
+| `rodeos_ingest.genomics.illumina.bcl` | Illumina run folders |
+| `rodeos_ingest.genomics.illumina.fastq` | FASTQ demultiplexing results |
 
-- `rodeos_ingest.genomics.illumina.bcl` --
-  Ingest a landing zone folder where Illumina instruments write their run folders to.
-- `rodeos_ingest.genomics.illumina.fastq` --
-  Ingest a landing zone folder for demultiplexing results.
-
-## Developer Information
-
-### Commit Message Emojis
-
-- https://robinpokorny.github.io/git3moji/
-
-## Development Setup
-
-- install redis or run via docker
-- add `redis` to `/etc/hosts` with appropriate IP (e.g., localhost)
-- install irods or run via docker
-- add `irods` to `/etc/hosts` with appropriate IP (e.g., localhost)
-- setup `.irods/irods_environment.json` file, e.g.
-    ```json
-    {
-        "irods_host": "irods",
-        "irods_port": 1247,
-        "irods_authentication_scheme": "NATIVE",
-        "irods_default_hash_scheme": "MD5",
-        "irods_zone_name": "tempZone",
-        "irods_user_name": "rods",
-        "irods_password": "rods"
-    }
-    ```
-
-## Caveat Lector
-
-### Redis best Practice
-
-RODEOS ingest is based on ICAI.
-The latter relies on Celery and redis for work queue and caching.
-The default settings of redis in many systems is to have no limit on its memory which can lead to out of memory situations when ingesting many files.
-Make sure to adjust the following settings in `redis.conf`, below are sensible defaults.
-
-```
-maxmemory 1073741824            # 1GB, can be adjusted
-maxmemory-policy allkeys-lru    # enable cache evication based on LRU
-```
+Please refer to the [documentation on ReadTheDocs](https://rodeos-ingest.readthedocs.io/en/latest/?badge=latest) for more information.
