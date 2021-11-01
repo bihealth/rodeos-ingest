@@ -5,7 +5,7 @@ Running
 =======
 
 You run the ingest from the directory ``$SOURCE`` to the destination collection ``$DEST`` as follows.
-Use the papropriate path to the handler module that you want to use.
+Use the appropriate path to the handler module that you want to use.
 
 ::
 
