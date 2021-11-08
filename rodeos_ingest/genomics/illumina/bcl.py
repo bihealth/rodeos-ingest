@@ -18,7 +18,7 @@ from irods.meta import iRODSMeta
 from irods_capability_automated_ingest.core import Core
 from irods_capability_automated_ingest.utils import Operation
 
-from .run_folder import (
+from rodeos_ingest.genomics.illumina.run_folder import (
     parse_runinfo_xml,
     parse_runparameters_xml,
     parse_netcopy_complete_txt,
@@ -26,14 +26,14 @@ from .run_folder import (
     RunInfo,
     NetcopyInfo,
 )
-from ...common import (
+from rodeos_ingest.common import (
     cleanuping,
     pre_job as common_pre_job,
     post_job as common_post_job,
     refresh_last_update_metadata,
     run_ichksum,
 )
-from ...settings import RODEOS_DELAY_UNTIL_AT_REST_SECONDS
+from rodeos_ingest.settings import RODEOS_DELAY_UNTIL_AT_REST_SECONDS
 
 
 #: This time should pass after the previous update and the existance of the output marker file

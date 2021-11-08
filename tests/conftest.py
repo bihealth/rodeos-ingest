@@ -11,8 +11,8 @@ from irods.access import iRODSAccess
 from irods.models import DataObject, Collection, User
 from irods.session import iRODSSession
 from redis import StrictRedis, ConnectionPool
-from irods_capability_automated_ingest.sync_task import done
 
+from irods_capability_automated_ingest.sync_job import sync_job
 import pytest
 
 
@@ -47,6 +47,8 @@ def make_irods_session(**kwargs):
             env_file = os.environ["IRODS_ENVIRONMENT_FILE"]
         except KeyError:
             env_file = os.path.expanduser("~/.irods/irods_environment.json")
+
+    print(f"{env_file} has been chosen")
 
     try:
         _ = os.environ["IRODS_CI_TEST_RUN"]
@@ -149,7 +151,7 @@ def irods():
     fixture.tear_down()
 
 
-def start_celery_worker(n, args=None, write_logs=False):
+def start_celery_worker(n=4, args=None, write_logs=False):
     """Start celery worker with ``n`` threads and additional ``args``."""
     if write_logs:
         log_args = ["-f", "worker.log"]
@@ -169,7 +171,8 @@ def start_celery_worker(n, args=None, write_logs=False):
             "restart,path,file",
         ]
         + log_args
-        + (args or [])
+        + (args or []),
+        preexec_fn=os.setpgrp,
     )
     return worker
 
@@ -189,17 +192,19 @@ def wait_for_celery_worker(worker, job_name="job-name", timeout=60):
             active = 0
         else:
             active = sum(map(len, act.values()))
-        d = done(r, job_name)
+        d = sync_job(job_name, r).done()
         if restart != 0 or active != 0 or not d:
             time.sleep(1)
         else:
             break
 
     # Try really hard for half a second to kill celery.
-    t_end = time.time() + 0.5
-    while timeout is None or time.time() < t_end:
-        worker.terminate()
-    worker.wait()
+    #t_end = time.time() + 0.5
+    #while timeout is None or time.time() < t_end:
+    #    worker.terminate()
+    #worker.wait()
+    import signal
+    os.killpg(os.getpgid(worker.pid), signal.SIGTERM)
 
 
 app = Celery("icai")
