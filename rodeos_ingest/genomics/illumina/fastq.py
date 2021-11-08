@@ -15,13 +15,13 @@ import typing
 from irods_capability_automated_ingest.core import Core
 from irods_capability_automated_ingest.utils import Operation
 
-from ...common import (
+from rodeos_ingest.common import (
     pre_job as common_pre_job,
     post_job as common_post_job,
     refresh_last_update_metadata,
     run_ichksum,
 )
-from ...settings import (
+from rodeos_ingest.settings import (
     RODEOS_DELAY_UNTIL_AT_REST_SECONDS,
     RODEOS_ILLUMINA_FASTQ_DONE_MARKER_FILE as DONE_MARKER_FILE,
 )

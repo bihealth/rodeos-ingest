@@ -80,7 +80,7 @@ def test_system_ingest_bcl(tmp_path, irods, mocker, configure_move):
                 "--exclude_file_name",
                 ".*_MANIFEST_*.txt",
                 "--event_handler",
-                "rodeos_ingest.genomics.illumina.bcl",
+                "rodeos_ingest/genomics/illumina/bcl.py",
                 "--job_name",
                 job_name,
                 "--log_level",
