@@ -11,7 +11,7 @@ from irods.access import iRODSAccess
 from irods.models import DataObject, Collection, User
 from irods.session import iRODSSession
 from redis import StrictRedis, ConnectionPool
-from irods_capability_automated_ingest.sync_task import done
+from irods_capability_automated_ingest.sync_job import sync_job
 
 import pytest
 
@@ -189,7 +189,7 @@ def wait_for_celery_worker(worker, job_name="job-name", timeout=60):
             active = 0
         else:
             active = sum(map(len, act.values()))
-        d = done(r, job_name)
+        d = sync_job.done(r, job_name)
         if restart != 0 or active != 0 or not d:
             time.sleep(1)
         else:
