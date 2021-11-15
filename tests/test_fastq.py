@@ -43,7 +43,7 @@ def test_system_ingest_fastq(tmp_path, irods, mocker, configure_move):
     mocker.patch.dict(os.environ, {"RODEOS_MOVE_AFTER_INGEST": "1" if configure_move else "0"})
 
     # Setup iRODS
-    dest_coll = "/tempZone/target"
+    dest_coll = "/rodeosZone/target"
     irods.create_collection(dest_coll, "rods")
     # Copy run folder from repository to temporary directory.
     folder_name = "200506_ST-K00106_0095_A_HFNLJBBXY"
@@ -137,7 +137,7 @@ def test_integration_ingest_fastq(tmp_path, irods, mocker, configure_move):
     mocker.patch.object(common, "HASHDEEP_ALGO", "sha256")
 
     # Setup iRODS
-    dest_coll = Path("/tempZone/target")
+    dest_coll = Path("/rodeosZone/target")
     irods.create_collection(dest_coll, "rods")
 
     # Copy run folder from repository to temporary directory.

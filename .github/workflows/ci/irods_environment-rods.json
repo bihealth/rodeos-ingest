@@ -3,9 +3,9 @@
     "irods_port": 1247,
     "irods_authentication_scheme": "NATIVE",
     "irods_default_hash_scheme": "MD5",
-    "irods_zone_name": "tempZone",
+    "irods_zone_name": "rodeosZone",
     "irods_user_name": "rods",
     "irods_password": "rods",
-    "irods_cwd": "/tempZone/home/rods",
-    "irods_home": "/tempZone/home/rods"
+    "irods_cwd": "/rodeosZone/home/rods",
+    "irods_home": "/rodeosZone/home/rods"
 }

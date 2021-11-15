@@ -11,7 +11,9 @@ DOCKER_VERSION=$(echo $GIT_TAG | sed -e 's/^v//')-$BUILD_NO
 GIT_DEPTH=$(($(git rev-list HEAD ^$(git describe --abbrev=0 --tags) --count) + 1))
 GIT_URL=${GIT_URL-https://github.com/bihealth/rodeos-ingest.git}
 
-docker build . \
+docker build .. \
+    -f Dockerfile \
+    --no-cache \
     --build-arg app_git_tag=$GIT_TAG \
     --build-arg app_git_depth=$GIT_DEPTH \
     --build-arg app_git_url=$GIT_URL \
