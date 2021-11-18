@@ -277,7 +277,7 @@ def compute_local_manifest(logger, src_folder):
 def pre_job(hdlr_mod, logger, meta):
     """Set the ``first_seen`` meta data value."""
     src_root = pathlib.Path(meta["root"])
-    with cleanuping(irods_session(hdlr_mod=hdlr_mod, meta=meta, logger=logger)) as session:
+    with cleanuping(irods_session(handler_module=hdlr_mod, meta=meta, logger=logger)) as session:
         dst_root = session.collections.get(meta["target"])
         dst_collections = {c.name: c for c in dst_root.subcollections}
         for src_folder in sorted([f.name for f in sorted(src_root.iterdir())]):
@@ -300,7 +300,7 @@ def post_job(
 ):
     """Move completed run folders into the "ingested" area."""
     src_root = pathlib.Path(meta["root"])
-    with cleanuping(irods_session(hdlr_mod=hdlr_mod, meta=meta, logger=logger)) as session:
+    with cleanuping(irods_session(handler_module=hdlr_mod, meta=meta, logger=logger)) as session:
         dst_root = session.collections.get(meta["target"])
         dst_collections = {c.name: c for c in dst_root.subcollections}
         for src_folder in sorted([f.name for f in sorted(src_root.iterdir())]):
