@@ -26,7 +26,8 @@ COPY .github/workflows/ci/irods_environment-rods.json /root/.irods/irods_environ
 RUN apt-get update && \
     apt-get install -y \
         wget \
-        multiarch-support
+        multiarch-support \
+        vim tree
         #lsb-release \
 
 RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - && \
