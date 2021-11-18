@@ -14,7 +14,7 @@ import dateutil.parser
 from irods_capability_automated_ingest.sync_irods import irods_session
 from irods.meta import iRODSMeta
 
-from .settings import (
+from rodeos_ingest.settings import (
     RODEOS_HASHDEEP_ALGO as HASHDEEP_ALGO,
     RODEOS_HASHDEEP_THREADS as HASHDEEP_THREADS,
     RODEOS_MANIFEST_LOCAL as MANIFEST_LOCAL,

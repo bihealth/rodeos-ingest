@@ -71,7 +71,7 @@ def test_system_ingest_fastq(tmp_path, irods, mocker, configure_move):
                 "--exclude_file_name",
                 ".*_MANIFEST_*.txt",
                 "--event_handler",
-                "rodeos_ingest.genomics.illumina.fastq",
+                "rodeos_ingest/genomics/illumina/fastq.py",
                 "--job_name",
                 job_name,
                 "--log_level",
