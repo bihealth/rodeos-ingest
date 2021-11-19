@@ -26,6 +26,7 @@ COPY .github/workflows/ci/irods_environment-rods.json /root/.irods/irods_environ
 RUN apt-get update && \
     apt-get install -y \
         wget \
+        hashdeep \
         multiarch-support \
         vim tree
         #lsb-release \
@@ -52,9 +53,10 @@ RUN apt-get update && \
 
 WORKDIR /usr/src/app/rodeos-ingest
 RUN ls -lh && pwd
-RUN pip install --no-cache-dir -r requirements/base.txt
+RUN pip install -e .
+#RUN pip install --no-cache-dir -r requirements/base.txt
 RUN pip install --no-cache-dir -r requirements/test.txt # TODO remove
-RUN pip install pytest
+#RUN pip install pytest
 RUN pip freeze
 
 # Define the entry point

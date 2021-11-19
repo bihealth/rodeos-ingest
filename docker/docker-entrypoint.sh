@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -euo pipefail
-IFS=$'\n\t'
+#set -euo pipefail
+#IFS=$'\n\t'
 
 #python \
 #    -m irods_capability_automated_ingest.irods_sync \
@@ -24,7 +24,7 @@ echo $PWD
 
 env
 
-tail -f /dev/null
+#tail -f /dev/null
 
 py.test -v -x ./tests
 
