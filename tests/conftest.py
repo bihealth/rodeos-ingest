@@ -11,22 +11,23 @@ from irods.access import iRODSAccess
 from irods.models import DataObject, Collection, User
 from irods.session import iRODSSession
 from redis import StrictRedis, ConnectionPool
-#from irods_capability_automated_ingest.sync_job import sync_job
 
-def tasks_key(job_name):
-    return "tasks:/"+job_name
+from irods_capability_automated_ingest.sync_job import sync_job
 
-def get_with_key(r, key, path, typefunc):
-    sync_time_bs = r.get(key(path))
-    if sync_time_bs is None:
-        sync_time = None
-    else:
-        sync_time = typefunc(sync_time_bs)
-    return sync_time
-
-def done(r, job_name):
-    ntasks = get_with_key(r, tasks_key, job_name, int)
-    return ntasks is None or ntasks == 0
+#def tasks_key(job_name):
+#    return "tasks:/"+job_name
+#
+#def get_with_key(r, key, path, typefunc):
+#    sync_time_bs = r.get(key(path))
+#    if sync_time_bs is None:
+#        sync_time = None
+#    else:
+#        sync_time = typefunc(sync_time_bs)
+#    return sync_time
+#
+#def done(r, job_name):
+#    ntasks = get_with_key(r, tasks_key, job_name, int)
+#    return ntasks is None or ntasks == 0
 
 import pytest
 
@@ -60,15 +61,13 @@ def make_irods_session(**kwargs):
     except KeyError:
         try:
             env_file = os.environ["IRODS_ENVIRONMENT_FILE"]
-            if not env_file:
-                env_file = IRODS_ENV_INGEST
         except KeyError:
             env_file = os.path.expanduser("~/.irods/irods_environment.json")
 
     print(f"{env_file} has been chosen")
 
     try:
-        #_ = os.environ["IRODS_CI_TEST_RUN"]
+        _ = os.environ["IRODS_CI_TEST_RUN"]
         uid = getpwnam("irods").pw_uid
     except KeyError:
         uid = None
@@ -208,8 +207,7 @@ def wait_for_celery_worker(worker, job_name="job-name", timeout=60):
             active = 0
         else:
             active = sum(map(len, act.values()))
-        #d = sync_job.done(r, job_name)
-        d = done(r, job_name)
+        d = sync_job(job_name, r).done()
         if restart != 0 or active != 0 or not d:
             time.sleep(1)
         else:

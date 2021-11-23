@@ -28,7 +28,7 @@ RUN apt-get update && \
         wget \
         hashdeep \
         multiarch-support \
-        vim tree
+        vim tree less htop
         #lsb-release \
 
 RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - && \

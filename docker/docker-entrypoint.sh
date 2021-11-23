@@ -11,6 +11,9 @@
 #        --event_handler rodeos_ingest.genomics.illumina.bcl \
 #        $ARGS_BACKGROUND
 
+/usr/local/bin/wait
+sleep 3 # sometimes port is already open during data base setup
+
 iinit rods
 
 echo $(which celery)
@@ -18,7 +21,7 @@ echo $(which celery)
 #tail -f /dev/null
 
 #celery -A irods_capability_automated_ingest.sync_task worker -l "$LOG_LEVEL" -Q restart,path,file &
-celery -A irods_capability_automated_ingest.sync_task worker -l error -Q restart,path,file -c 4 &
+#celery -A irods_capability_automated_ingest.sync_task worker -l error -Q restart,path,file -c 4 &
 
 echo $PWD
 
