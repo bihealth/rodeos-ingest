@@ -1,7 +1,6 @@
 FROM python:3.8-buster
 
-# MAINTAINER Clemens Messerschmidt <messersc@bih-charite.de>
-#LABEL org.opencontainers.image.source https://github.com/bihealth/rodeos-ingest
+LABEL org.opencontainers.image.source https://github.com/bihealth/rodeos-ingest
 
 ARG app_git_url=https://github.com/messersc/rodeos-ingest.git
 ARG app_git_tag=feature/docker
@@ -41,23 +40,12 @@ RUN wget security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1
 RUN apt-get update && \
     apt-get install -y \
         irods-icommands 
-#        libssl1.0.0-
-#        apt-utils \
-#        gcc \
-#        ldap-utils \
-#        libldap2-dev \
-#        libsasl2-dev \
-#        make \
-#        postgresql-client \
-#        wget
 
 WORKDIR /usr/src/app/rodeos-ingest
-RUN ls -lh && pwd
 RUN pip install -e .
 #RUN pip install --no-cache-dir -r requirements/base.txt
 RUN pip install --no-cache-dir -r requirements/test.txt # TODO remove
-#RUN pip install pytest
-RUN pip freeze
+#RUN pip freeze
 
 # Define the entry point
 COPY docker/docker-entrypoint.sh /usr/local/bin

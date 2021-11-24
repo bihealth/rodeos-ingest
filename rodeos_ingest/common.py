@@ -288,7 +288,7 @@ def pre_job(hdlr_mod, logger, meta):
                         KEY_FIRST_SEEN, datetime.datetime.now().isoformat(), ""
                     )
             else:
-                logger.info("Skipping %s as it corresponds to no destination collection")
+                logger.info("Skipping %s pre-job as it corresponds to no destination collection" % src_folder)
 
 
 def post_job(
@@ -314,7 +314,7 @@ def post_job(
                     delay_until_at_rest,
                 )
             else:
-                logger.info("Skipping %s as it corresponds to no destination collection")
+                logger.info("Skipping %s post-job as it corresponds to no destination collection" % src_folder)
 
 
 def refresh_last_update_metadata(logger, session, meta):

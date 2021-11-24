@@ -12,7 +12,7 @@
 #        $ARGS_BACKGROUND
 
 /usr/local/bin/wait
-sleep 3 # sometimes port is already open during data base setup
+sleep 5 # sometimes port is already open during data base setup
 
 iinit rods
 
@@ -26,8 +26,6 @@ echo $(which celery)
 echo $PWD
 
 env
-
-#tail -f /dev/null
 
 py.test -v -x ./tests
 
