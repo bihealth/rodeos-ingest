@@ -13,22 +13,6 @@ from irods.session import iRODSSession
 from redis import StrictRedis, ConnectionPool
 
 from irods_capability_automated_ingest.sync_job import sync_job
-
-#def tasks_key(job_name):
-#    return "tasks:/"+job_name
-#
-#def get_with_key(r, key, path, typefunc):
-#    sync_time_bs = r.get(key(path))
-#    if sync_time_bs is None:
-#        sync_time = None
-#    else:
-#        sync_time = typefunc(sync_time_bs)
-#    return sync_time
-#
-#def done(r, job_name):
-#    ntasks = get_with_key(r, tasks_key, job_name, int)
-#    return ntasks is None or ntasks == 0
-
 import pytest
 
 
