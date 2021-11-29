@@ -16,11 +16,11 @@ ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait
 RUN chmod +x /usr/local/bin/wait
 
 # Copy source code into Docker image
-#WORKDIR /usr/src/app
-#RUN git clone --depth "$app_git_depth" --branch feature/docker https://github.com/messersc/rodeos-ingest.git
+WORKDIR /usr/src/app
+RUN git clone --depth "$app_git_depth" --branch feature/docker https://github.com/messersc/rodeos-ingest.git
 
 COPY . /usr/src/app/rodeos-ingest
-COPY .github/workflows/ci/irods_environment-rods.json /root/.irods/irods_environment.json
+#COPY .github/workflows/ci/irods_environment-rods.json /root/.irods/irods_environment.json
 
 RUN apt-get update && \
     apt-get install -y \
