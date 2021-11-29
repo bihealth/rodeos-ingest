@@ -19,8 +19,7 @@ RUN chmod +x /usr/local/bin/wait
 WORKDIR /usr/src/app
 RUN git clone --depth "$app_git_depth" --branch feature/docker https://github.com/messersc/rodeos-ingest.git
 
-COPY . /usr/src/app/rodeos-ingest
-#COPY .github/workflows/ci/irods_environment-rods.json /root/.irods/irods_environment.json
+#COPY . /usr/src/app/rodeos-ingest
 
 RUN apt-get update && \
     apt-get install -y \
@@ -42,13 +41,14 @@ RUN apt-get update && \
         irods-icommands 
 
 WORKDIR /usr/src/app/rodeos-ingest
-RUN pip install -e .
-#RUN pip install --no-cache-dir -r requirements/base.txt
-RUN pip install --no-cache-dir -r requirements/test.txt # TODO remove
-#RUN pip freeze
+RUN pip install -e . && \
+    pip install --no-cache-dir -r requirements/test.txt && \
+    mkdir -p /root/.irods && \
+    cp .github/workflows/ci/irods_environment-rods.json /root/.irods/irods_environment.json
 
 # Define the entry point
-COPY docker/docker-entrypoint.sh /usr/local/bin
+#COPY docker/docker-entrypoint.sh /usr/local/bin
+COPY docker-entrypoint.sh /usr/local/bin
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
     ln -s /usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
