@@ -77,7 +77,7 @@ class IrodsFixture:
     def __init__(self, **kwargs):
         self.session = make_irods_session(**kwargs)
         #: The zone name (hard-coded for now).
-        self.zone_name = "rodeosZone"
+        self.zone_name = "tempZone"
         #: The super user name.
         self.rods_user_name = "rods"
         #: The users created through this sesssion.

@@ -52,7 +52,7 @@ def test_system_ingest_bcl(tmp_path, irods, mocker, configure_move):
     mocker.patch.dict(os.environ, {"RODEOS_MOVE_AFTER_INGEST": "1" if configure_move else "0"})
 
     # Setup iRODS
-    dest_coll = "/rodeosZone/target"
+    dest_coll = "/tempZone/target"
     irods.create_collection(dest_coll, "rods")
     # Copy run folder from repository to temporary directory.
     run_folder = "200305_NB502131_0093_AH2GWKAFX2"
@@ -156,7 +156,7 @@ def test_integration_ingest_bcl(tmp_path, irods, mocker, configure_move):
     mocker.patch.object(common, "HASHDEEP_ALGO", "sha256")
 
     # Setup iRODS
-    dest_coll = Path("/rodeosZone/target")
+    dest_coll = Path("/tempZone/target")
     irods.create_collection(dest_coll, "rods")
 
     # Copy run folder from repository to temporary directory.
