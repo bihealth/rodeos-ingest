@@ -171,7 +171,8 @@ def start_celery_worker(n, args=None, write_logs=False):
             "restart,path,file",
         ]
         + log_args
-        + (args or [])
+        + (args or []),
+        preexec_fn=os.setpgrp,
     )
     return worker
 
@@ -198,10 +199,12 @@ def wait_for_celery_worker(worker, job_name="job-name", timeout=60):
             break
 
     # Try really hard for half a second to kill celery.
-    t_end = time.time() + 0.5
-    while timeout is None or time.time() < t_end:
-        worker.terminate()
-    worker.wait()
+    #t_end = time.time() + 0.5
+    #while timeout is None or time.time() < t_end:
+    #    worker.terminate()
+    #worker.wait()
+    import signal
+    os.killpg(os.getpgid(worker.pid), signal.SIGTERM)
 
 
 app = Celery("icai")
