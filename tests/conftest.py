@@ -164,7 +164,7 @@ def start_celery_worker(n, args=None, write_logs=False):
             "irods_capability_automated_ingest.sync_task",
             "worker",
             #"-c",
-            #str(8),
+            #str(n),
             "-l",
             "INFO",
             "-Q",
