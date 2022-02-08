@@ -1,0 +1,11 @@
+{
+    "irods_host": "$IRODS_HOST",
+    "irods_port": $IRODS_PORT,
+    "irods_authentication_scheme": "$IRODS_AUTHENTICATION_SCHEME",
+    "irods_default_hash_scheme": "$IRODS_DEFAULT_HASH_SCHEME",
+    "irods_zone_name": "$IRODS_ZONE_NAME",
+    "irods_user_name": "$IRODS_USER",
+    "irods_password": "$IRODS_PASS",
+    "irods_cwd": "/$IRODS_ZONE_NAME/home/$IRODS_USER",
+    "irods_home": "/$IRODS_ZONE_NAME/home/$IRODS_USER"
+}

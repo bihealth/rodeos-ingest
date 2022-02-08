@@ -19,14 +19,12 @@ RUN chmod +x /usr/local/bin/wait
 #WORKDIR /usr/src/app
 #RUN git clone --depth "$app_git_depth" --branch feature/docker https://github.com/messersc/rodeos-ingest.git
 
-COPY . /usr/src/app/rodeos-ingest
-COPY .github/workflows/ci/irods_environment-rods.json /root/.irods/irods_environment.json
-
 RUN apt-get update && \
     apt-get install -y \
         wget \
         hashdeep \
         multiarch-support \
+        gettext \
         vim tree less htop
         #lsb-release \
 
@@ -41,6 +39,9 @@ RUN apt-get update && \
     apt-get install -y \
         irods-icommands 
 
+COPY . /usr/src/app/rodeos-ingest
+COPY docker/templates/irods_environment.json /root/.irods/irods_environment.json.tmpl
+
 WORKDIR /usr/src/app/rodeos-ingest
 RUN pip install -e .
 #RUN pip install --no-cache-dir -r requirements/base.txt
@@ -52,3 +53,4 @@ COPY docker/docker-entrypoint.sh /usr/local/bin
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
     ln -s /usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["run-ingest"]

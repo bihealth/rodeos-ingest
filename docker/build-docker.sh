@@ -17,4 +17,5 @@ docker build .. \
     --build-arg app_git_tag=$GIT_TAG \
     --build-arg app_git_depth=$GIT_DEPTH \
     --build-arg app_git_url=$GIT_URL \
-    -t ghcr.io/bihealth/rodeos-ingest:$DOCKER_VERSION
+    -t rodeos-ingest:debug
+    #-t ghcr.io/bihealth/rodeos-ingest:$DOCKER_VERSION

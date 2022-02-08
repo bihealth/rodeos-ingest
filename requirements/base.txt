@@ -7,5 +7,5 @@ python-dateutil
 defusedxml
 
 # Install in-flight versions of ingest and python-irodsclient.
--e git+https://github.com/irods/irods_capability_automated_ingest.git@master#egg=irods_capability_automated_ingest
+-e git+https://github.com/irods/irods_capability_automated_ingest.git@main#egg=irods_capability_automated_ingest
 #-e git+https://github.com/irods/python-irodsclient.git@v1.0.0#egg=python-irodsclient

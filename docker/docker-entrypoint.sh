@@ -3,30 +3,52 @@
 #set -euo pipefail
 #IFS=$'\n\t'
 
-#python \
-#    -m irods_capability_automated_ingest.irods_sync \
-#    start \
-#        "$SRC" \
-#        "$DEST" \
-#        --event_handler rodeos_ingest.genomics.illumina.bcl \
-#        $ARGS_BACKGROUND
-
 /usr/local/bin/wait
 sleep 5 # sometimes port is already open during data base setup
 
-iinit rods
 
-echo $(which celery)
+if [[ "$1" == "run-tests" ]]; then
+    cp .github/workflows/ci/irods_environment-rods.json /root/.irods/irods_environment.json
+    echo $IRODS_PASS | iinit
+    if [ $? -ne 0 ]; then
+        echo "iinit failed"
+    fi
 
-#tail -f /dev/null
+    py.test -v -x ./tests
 
-#celery -A irods_capability_automated_ingest.sync_task worker -l "$LOG_LEVEL" -Q restart,path,file &
-#celery -A irods_capability_automated_ingest.sync_task worker -l error -Q restart,path,file -c 4 &
 
-echo $PWD
+elif [[ "$1" == "run-ingest" ]]; then
+    envsubst < /root/.irods/irods_environment.json.tmpl > /root/.irods/irods_environment.json
+    echo $IRODS_PASS | iinit
+    if [ $? -ne 0 ]; then
+        echo "iinit failed"
+    fi
 
-env
+    celery -A irods_capability_automated_ingest.sync_task worker -l error -Q restart,path,file -c 12 &
 
-py.test -v -x ./tests
+    for i in $RODEOS_INGEST_PATH/*; do
+        echo "Going for the following ingest path:"
+        echo $i
+        TARGET=/$IRODS_ZONE_NAME/home/$IRODS_USER/$RODEOS_TARGET_COLLECTION
+        DIR=$(basename $i)
+        YEAR=20${DIR::2}  # first two chars
+        imkdir $TARGET
+        imkdir $TARGET/$YEAR
+        imkdir $TARGET/$YEAR/$DIR
 
-tail -f /dev/null
+        python -m irods_capability_automated_ingest.irods_sync start \
+            --event_handler $RODEOS_EVENT_HANDLER \
+            $i $TARGET/$YEAR/$DIR
+        sleep 10
+    done
+
+
+else
+    envsubst < /root/.irods/irods_environment.json.tmpl > /root/.irods/irods_environment.json
+    echo $IRODS_PASS | iinit
+    if [ $? -ne 0 ]; then
+        echo "iinit failed"
+    fi
+
+    exec "$@"
+fi

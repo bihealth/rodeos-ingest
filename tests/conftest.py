@@ -151,7 +151,7 @@ def irods():
     fixture.tear_down()
 
 
-def start_celery_worker(n, args=None, write_logs=False):
+def start_celery_worker(n=4, args=None, write_logs=False):
     """Start celery worker with ``n`` threads and additional ``args``."""
     if write_logs:
         log_args = ["-f", "worker.log"]
@@ -164,7 +164,7 @@ def start_celery_worker(n, args=None, write_logs=False):
             "irods_capability_automated_ingest.sync_task",
             "worker",
             "-c",
-            str(4),
+            str(n),
             "-l",
             "INFO",
             "-Q",
